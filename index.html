@@ -69,8 +69,46 @@ th,td{border:1px solid #222;padding:7px 8px;vertical-align:top}th{background:var
 </div>
 <script>
 const $=id=>document.getElementById(id);
+const TEST_DATA=`| Afrilabs Pvt Ltd Abv | | | | |
+| Bill-wise Details | | | | |
+| 1-Jan-26 to 28-Aug-26 | | | | |
+| Pending Bills | | | | |
+| Date | Ref. No. | | | Pending |
+| | | | | Amount |
+| 21-Mar-26 | 8Z4C3G | | | 2116800.00 Dr |
+| 21-Mar-26 | | 2116800.00 Dr | | |
+| 8Z4C3G SHAIBU ISSAH/ABDULRAHIM 071-6321279835 ACC NBO ACC | | | | |
+| 21-Mar-26 | Hillpark Hotel | | | 420000.00 Dr |
+| 21-Mar-26 | | 420000.00 Dr | | |
+| Hillpark Hotel Mr. ABDULRAHIM SHAIBUISSAH | | | | |
+| 16-Apr-26 | 76LE75 | | | 3626824.00 Dr |
+| 16-Apr-26 | | 3626824.00 Dr | | |
+| 76LE75 MADU / NANKO SARAH 220-58900194785/796 ABV FRA GAV ABV
+76LE75 MADU / AMARACHI MANMAK 220-58900194800/811 ABV FRA GAV ABV | | | | |
+| 13-May-26 | INSURANCE | | | 45234.00 Dr |
+| 13-May-26 | | 45234.00 Dr | | |
+| INSURANCE MADU NANKO SARAH B50553264 INSURANCE
+INSURANCE MADU AMARACHI NANMAK N21408745 INSURANCE
+INSURANCE CAULCRICK FUNMILAYO ANIKE B04333731 INSURANCE | | | | |
+| 15-May-26 | HOTEL BOOKING | | | 834600.00 Dr |
+| 15-May-26 | | 348600.00 Dr | | |
+| HOTEL BOOKING Ms. NANKO SARAH MADU - HOTEL BOOKING
+HOTEL BOOKING Mr. AMARACHI MANMAK MADU - HOTEL BOOKING | | | | |
+| 17-Jun-26 | | 150000.00 Dr | | |
+| HOTEL BOOKING Mr ABDULRAHIM SHAIBUISSAH - HOTEL BOOKING | | | | |
+| 19-Jun-26 | | 336000.00 Dr | | |
+| HOTEL BOOKING Mr ABDULRAHIM SHAIBU ISSAH - HOTEL BOOKING | | | | |
+| 16-May-26 | SWE8YP | | | 1951789.00 Dr |
+| 16-May-26 | | 1951789.00 Dr | | |
+| SWE8YP CAULCRICK / FUNMILAYOANIKE 235-2239064961 LOS BRU LOS | | | | |
+| 17-May-26 | 8SLNPQ REISSUED | | | 496800.00 Dr |
+| 17-May-26 | | 496800.00 Dr | | |
+| 8SLNPQ OGBONNA/PATRICIA IFEOMA 071-9237707638 REISSUED | | | | |
+| 27-Jul-26 | 4910 | | | 3795435.00 Cr |
+| 27-Jul-26 | | 3795435.00 Cr | | |
+| payment recevie from Afrilabs Pvt Ltd Abv`;
 function clean(s){return String(s??"").replace(/<br\s*\/?>/gi,"\n").replace(/&nbsp;/gi," ").replace(/\u00a0/g," ").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/\r/g,"").trim()}
-function esc(s){return String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;","@":"@",">":"&gt;",'"':"&quot;"}[c]))}
+function esc(s){return String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function money(v){v=Number(v)||0;const n=Math.abs(v).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});return "NGN "+(v<0?"("+n+")":n)}
 function num(s){return parseFloat(String(s).replace(/,/g,""))||0}
 function parseDate(s){const m=String(s).match(/^(\d{1,2})[-\/]([A-Za-z]{3}|\d{1,2})[-\/](\d{2,4})$/);if(!m)return null;const mo={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};let y=+m[3];if(y<100)y+=2000;return new Date(y,/^[A-Za-z]/.test(m[2])?mo[m[2].toLowerCase()]:+m[2]-1,+m[1])}
@@ -90,33 +128,29 @@ function render(data){
   $("result").style.display="block";
   if(data.mode==="me"){
     $("journalTitle").textContent="STATEMENT / FOR ME"+(data.company?" — "+data.company:"");
-    const jt=$("journalTable");
-    jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>PNR / REF. NO.</th><th class="num">AMOUNT</th></tr>';
-    let jhtml="";
-    if(data.openingBalance!==0)jhtml+=`<tr><td>${esc(data.openingDate||"31/12/2025")}</td><td>OPENING BALANCE</td><td class="num">${money(data.openingBalance)}</td></tr>`;
+    const jt=$("journalTable");jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>PNR / REF. NO.</th><th class="num">AMOUNT</th></tr>';
+    let jhtml="";if(data.openingBalance!==0)jhtml+=`<tr><td>${esc(data.openingDate||"31/12/2025")}</td><td>OPENING BALANCE</td><td class="num">${money(data.openingBalance)}</td></tr>`;
     for(const r of data.upper)jhtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.pnr)}</td><td class="num">${money(r.amount)}</td></tr>`;
     jt.querySelector("tbody").innerHTML=jhtml||'<tr><td colspan="3" style="text-align:center">No PNR entries found.</td></tr>';
     jt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="2">STATEMENT TOTAL</td><td class="num">${money(data.openingBalance+data.bookingNet)}</td></tr>`;
-    const pt=$("paymentTable");
-    pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>RECEIPT / PAYMENT</th><th class="num">AMOUNT</th></tr>';
+    const pt=$("paymentTable");pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>RECEIPT / PAYMENT</th><th class="num">AMOUNT</th></tr>';
     let phtml="";for(const r of data.lower)phtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}${r.ref?" — "+esc(r.ref):""}</td><td class="num">${money(r.amount)}</td></tr>`;
     pt.querySelector("tbody").innerHTML=phtml||'<tr><td colspan="3" style="text-align:center">No receipt/payment entries found.</td></tr>';
     pt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="2">RECEIPT / PAYMENT NET</td><td class="num">${money(data.paymentNet)}</td></tr>`;
-    $("bookingNet").textContent=money(data.openingBalance+data.bookingNet);$("paymentNet").textContent=money(data.paymentNet);$("balance").textContent=money(data.balance);$("status").innerHTML=`FOR ME: Opening ${money(data.openingBalance)} + PNR entries ${money(data.bookingNet)} + Receipt/Payment effect ${money(data.paymentNet)} = Outstanding ${money(data.balance)}`;
-    return;
+    $("bookingNet").textContent=money(data.openingBalance+data.bookingNet);$("paymentNet").textContent=money(data.paymentNet);$("balance").textContent=money(data.balance);
+    $("status").innerHTML=`FOR ME: Opening ${money(data.openingBalance)} + PNR entries ${money(data.bookingNet)} + Receipt/Payment effect ${money(data.paymentNet)} = Outstanding ${money(data.balance)}.`;return;
   }
   $("journalTitle").textContent="JOURNAL"+(data.company?" — "+data.company:"");
-  const jt=$("journalTable");
-  jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>JOURNAL NO.</th><th>PNR</th><th>NAME</th><th>TICKET NO.</th><th>ROUTE</th><th class="num">AMOUNT</th></tr>';
+  const jt=$("journalTable");jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>JOURNAL NO.</th><th>PNR</th><th>NAME</th><th>TICKET NO.</th><th>ROUTE</th><th class="num">AMOUNT</th></tr>';
   let jhtml="";for(const r of data.visible)jhtml+=`<tr${r.chd?' class="chd"':''}><td>${esc(r.date)}</td><td>${esc(r.journalNo)}</td><td>${esc(r.pnr)}</td><td>${esc(r.name)}</td><td>${esc(r.ticket)}</td><td>${esc(r.route)}</td><td class="num">${money(r.amount)}</td></tr>`;
   jt.querySelector("tbody").innerHTML=jhtml||'<tr><td colspan="7" style="text-align:center">No valid Journal-linked entries found.</td></tr>';
   jt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="6">BOOKING NET</td><td class="num">${money(data.bookingNet)}</td></tr>`;
-  const pt=$("paymentTable");
-  pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>TYPE</th><th class="num">AMOUNT</th></tr>';
+  const pt=$("paymentTable");pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>TYPE</th><th class="num">AMOUNT</th></tr>';
   let phtml="";for(const r of data.payments)phtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}</td><td class="num">${money(r.amount)}</td></tr>`;
   pt.querySelector("tbody").innerHTML=phtml||'<tr><td colspan="3" style="text-align:center">No receipt/payment entries found.</td></tr>';
   pt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="2">PAYMENT NET</td><td class="num">${money(data.paymentNet)}</td></tr>`;
-  $("bookingNet").textContent=money(data.bookingNet);$("paymentNet").textContent=money(data.paymentNet);$("balance").textContent=money(data.balance);$("status").innerHTML=`FOR CLIENT: Booking Net ${money(data.bookingNet)} − Payment Net ${money(data.paymentNet)} = Outstanding ${money(data.balance)}.`;
+  $("bookingNet").textContent=money(data.bookingNet);$("paymentNet").textContent=money(data.paymentNet);$("balance").textContent=money(data.balance);
+  $("status").innerHTML=`FOR CLIENT: Booking Net ${money(data.bookingNet)} − Payment Net ${money(data.paymentNet)} = Outstanding ${money(data.balance)}.`;
 }
 function crc32(data){let c=0xFFFFFFFF;for(let i=0;i<data.length;i++){c^=data[i];for(let k=0;k<8;k++)c=(c>>>1)^((c&1)?0xEDB88320:0)}return(c^0xFFFFFFFF)>>>0}
 function u16(n){return[n&255,(n>>>8)&255]}function u32(n){return[n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}function concatBytes(arrs){let n=arrs.reduce((s,a)=>s+a.length,0),o=new Uint8Array(n),p=0;arrs.forEach(a=>{o.set(a,p);p+=a.length});return o}
@@ -124,9 +158,7 @@ function zipStore(files){const enc=new TextEncoder(),locals=[],centrals=[];let o
 function xmlEsc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}function colName(n){let s="";while(n){let r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26)}return s}
 function sheetXml(rows){let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';rows.forEach((r,ri)=>{x+=`<row r="${ri+1}">`;r.forEach((v,ci)=>{if(v===null||v===undefined||v==="")x+=`<c r="${colName(ci+1)}${ri+1}"/>`;else if(typeof v==="number")x+=`<c r="${colName(ci+1)}${ri+1}" t="n"><v>${v}</v></c>`;else x+=`<c r="${colName(ci+1)}${ri+1}" t="inlineStr"><is><t>${xmlEsc(v)}</t></is></c>`});x+="</row>"});return x+"</sheetData></worksheet>"}
 function exportXlsx(data){const j=[["DATE","JOURNAL NO.","PNR","NAME","TICKET NO.","ROUTE","AMOUNT"]];data.visible.forEach(r=>j.push([r.date,r.journalNo,r.pnr,r.name,r.ticket,r.route,Number(r.amount)]));j.push(["","","","","","BOOKING NET",Number(data.bookingNet)]);const p=[["DATE","TYPE","AMOUNT"]];data.payments.forEach(r=>p.push([r.date,r.type,Number(r.amount)]));p.push(["","PAYMENT NET",Number(data.paymentNet)]);p.push(["","OUTSTANDING",Number(data.balance)]);const files=[{name:"[Content_Types].xml",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`},{name:"_rels/.rels",data:`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},{name:"xl/workbook.xml",data:`<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="JOURNAL" sheetId="1" r:id="rId1"/><sheet name="RECEIPT-PAYMENT" sheetId="2" r:id="rId2"/></sheets></workbook>`},{name:"xl/_rels/workbook.xml.rels",data:`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/></Relationships>`},{name:"xl/worksheets/sheet1.xml",data:sheetXml(j)},{name:"xl/worksheets/sheet2.xml",data:sheetXml(p)}];const bytes=zipStore(files),blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="STATEMENT.xlsx";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
-let CURRENT_MODE="client";let LAST=null;$('modeClient').onclick=()=>{CURRENT_MODE="client";$('modeClient').classList.add("primary");$('modeMe').classList.remove("primary");$('modeHelp').textContent="FOR CLIENT: full narration-based client statement."};$('modeMe').onclick=()=>{CURRENT_MODE="me";$('modeMe').classList.add("primary");$('modeClient').classList.remove("primary");$('modeHelp').textContent="FOR ME: PNR references go in the upper box; numeric references go to Receipt/Payment."};
-$('process').onclick=()=>{const raw=$('input').value.trim();if(!raw){alert("Paste Tally / Excel data first.");return}$('status').textContent="Processing…";$('result').style.display="block";setTimeout(()=>{try{LAST=CURRENT_MODE==="me"?parseForMe(raw):parse(raw);render(LAST)}catch(e){console.error(e);alert("Processing failed: "+e.message)}},0)};
-$('test').onclick=()=>{$('input').value='';$('input').focus()};$('clear').onclick=()=>{$('input').value="";$('result').style.display="none";LAST=null};$('excel').onclick=()=>{if(!LAST){alert("Process statement first.");return}exportXlsx(LAST)};$('upload').onclick=()=>{$('file').click()};$('file').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(/\.(xlsx|xls)$/i.test(f.name)){if(!window.XLSX){await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";s.onload=res;s.onerror=()=>rej(new Error("Excel reader unavailable."));document.head.appendChild(s)})}const wb=XLSX.read(await f.arrayBuffer(),{type:"array"});$('input').value=wb.SheetNames.map(n=>XLSX.utils.sheet_to_csv(wb.Sheets[n],{FS:"\t"})).join("\n")}else $('input').value=await f.text();alert("File loaded. Click PROCESS STATEMENT.")}catch(err){alert(err.message)}});
+let CURRENT_MODE="client";let LAST=null;$('modeClient').onclick=()=>{CURRENT_MODE="client";$('modeClient').classList.add("primary");$('modeMe').classList.remove("primary");$('modeHelp').textContent="FOR CLIENT: full narration-based client statement."};$('modeMe').onclick=()=>{CURRENT_MODE="me";$('modeMe').classList.add("primary");$('modeClient').classList.remove("primary");$('modeHelp').textContent="FOR ME: PNR references go in the upper box; numeric references go to Receipt/Payment."};$('process').onclick=()=>{const raw=$('input').value.trim();if(!raw){alert("Paste Tally / Excel data first.");return}$('status').textContent="Processing…";$('result').style.display="block";setTimeout(()=>{try{LAST=CURRENT_MODE==="me"?parseForMe(raw):parse(raw);render(LAST)}catch(e){console.error(e);alert("Processing failed: "+e.message)}},0)};$('test').onclick=()=>{$('input').value=TEST_DATA;$('input').focus()};$('clear').onclick=()=>{$('input').value="";$('result').style.display="none";LAST=null};$('excel').onclick=()=>{if(!LAST){alert("Process statement first.");return}exportXlsx(LAST)};$('upload').onclick=()=>{$('file').click()};$('file').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(/\.(xlsx|xls)$/i.test(f.name)){if(!window.XLSX){await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";s.onload=res;s.onerror=()=>rej(new Error("Excel reader unavailable."));document.head.appendChild(s)})}const wb=XLSX.read(await f.arrayBuffer(),{type:"array"});$('input').value=wb.SheetNames.map(n=>XLSX.utils.sheet_to_csv(wb.Sheets[n],{FS:"\t"})).join("\n")}else $('input').value=await f.text();alert("File loaded. Click PROCESS STATEMENT.")}catch(err){alert(err.message)}});
 </script>
 </body>
 </html>
