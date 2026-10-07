@@ -22,10 +22,97 @@ th,td{border:1px solid #222;padding:7px 8px;vertical-align:top}th{background:var
 #result{display:none}
 @media(max-width:800px){.summary{grid-template-columns:1fr}}
 </style>
+
+<style id="modern-ui">
+:root{
+  --bg:#07111f;--panel:#0d1a2b;--panel2:#101f33;--line:#20344d;
+  --text:#edf5ff;--muted:#8ea4bd;--accent:#27d3a2;--accent2:#4da3ff;
+  --danger:#ff6b7a;--shadow:0 18px 50px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+body{
+  margin:0!important;min-height:100vh;
+  background:radial-gradient(circle at 15% 0%,#123052 0,transparent 34%),
+             radial-gradient(circle at 90% 10%,#123d39 0,transparent 30%),var(--bg)!important;
+  color:var(--text)!important;font-family:Inter,Segoe UI,Arial,sans-serif!important;
+}
+body>div:first-child,.container,.app,.wrap{max-width:1400px!important}
+header,.header,.topbar{
+  border:1px solid var(--line)!important;border-radius:18px!important;
+  background:rgba(13,26,43,.82)!important;box-shadow:var(--shadow)!important;
+  backdrop-filter:blur(14px);padding:18px!important;
+}
+button{
+  border:1px solid #29425f!important;border-radius:10px!important;
+  background:#13243a!important;color:#eaf3ff!important;
+  padding:10px 15px!important;font-weight:650!important;transition:.18s ease!important;
+  cursor:pointer;
+}
+button:hover{transform:translateY(-1px);border-color:#3b6288!important;background:#19304b!important}
+button.active,.active{
+  background:linear-gradient(135deg,var(--accent),#16a98a)!important;
+  color:#04131a!important;border-color:transparent!important;
+}
+textarea,input,select{
+  background:#081525!important;color:#eaf3ff!important;
+  border:1px solid #29425f!important;border-radius:12px!important;
+}
+textarea{line-height:1.45!important}
+textarea:focus,input:focus,select:focus{
+  outline:none!important;border-color:var(--accent2)!important;
+  box-shadow:0 0 0 3px rgba(77,163,255,.12)!important;
+}
+table{
+  width:100%!important;border-collapse:separate!important;border-spacing:0!important;
+  overflow:hidden!important;border:1px solid var(--line)!important;
+  border-radius:14px!important;background:#0a1727!important;
+}
+th{
+  position:sticky;top:0;z-index:2;background:#13263e!important;
+  color:#a9c8e8!important;font-size:12px!important;text-transform:uppercase;
+  letter-spacing:.06em;padding:12px!important;border-bottom:1px solid var(--line)!important;
+}
+td{padding:10px 12px!important;border-bottom:1px solid #172b42!important;color:#dce9f7!important}
+tr:hover td{background:#102237!important}
+.card,.panel,.box,.section{
+  background:rgba(13,26,43,.88)!important;border:1px solid var(--line)!important;
+  border-radius:16px!important;box-shadow:0 10px 30px rgba(0,0,0,.16)!important;
+}
+h1,h2,h3{color:#f4f8ff!important}
+small,.muted,.hint{color:var(--muted)!important}
+.badge{border-radius:999px!important}
+</style>
+
+<style id="ui-v2-header">
+/* New premium header treatment */
+h1, .title, .header-title, header h1 {
+  background: linear-gradient(135deg,#122a46 0%,#0d4b5a 48%,#087f73 100%) !important;
+  color:#f4fbff !important;
+  border:1px solid #2b6072 !important;
+  border-radius:16px !important;
+  box-shadow:0 12px 35px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  padding:22px 28px !important;
+  letter-spacing:.03em !important;
+}
+</style>
+
+<style id="brand-v3">
+.brand{
+  background:linear-gradient(135deg,#122a46 0%,#0d4b5a 48%,#087f73 100%) !important;
+  color:#f4fbff !important;
+  border:1px solid #2b6072 !important;
+  border-radius:16px !important;
+  box-shadow:0 12px 35px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.08) !important;
+  padding:22px 28px !important;
+  margin-bottom:18px !important;
+  letter-spacing:.03em !important;
+}
+</style>
 </head>
 <body>
 <div class="wrap">
   <div class="brand">STATEMENT</div>
+
   <div class="panel">
     <div class="actions" style="margin-bottom:12px">
       <button id="modeClient" class="primary">FOR CLIENT</button>
@@ -42,21 +129,30 @@ th,td{border:1px solid #222;padding:7px 8px;vertical-align:top}th{background:var
       <button id="clear">CLEAR</button>
     </div>
     <div class="hint">Paste the exact Tally / Excel text. Source data is the single source of truth.</div>
-    <textarea id="input" placeholder="Paste Tally / Excel data here..."></textarea>
+    <textarea id="input" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Paste Tally / Excel data here..."></textarea>
   </div>
+
   <div id="result">
     <div class="card">
       <div class="title" id="journalTitle">JOURNAL</div>
       <div class="tablewrap">
-        <table id="journalTable"><thead><tr><th>DATE</th><th>JOURNAL NO.</th><th>PNR</th><th>NAME</th><th>TICKET NO.</th><th>ROUTE</th><th class="num">AMOUNT</th></tr></thead><tbody></tbody><tfoot></tfoot></table>
+        <table id="journalTable">
+          <thead><tr><th>DATE</th><th>JOURNAL NO.</th><th>PNR</th><th>NAME</th><th>TICKET NO.</th><th>ROUTE</th><th class="num">AMOUNT</th></tr></thead>
+          <tbody></tbody><tfoot></tfoot>
+        </table>
       </div>
     </div>
+
     <div class="card">
       <div class="title">RECEIPT / PAYMENT</div>
       <div class="tablewrap">
-        <table id="paymentTable"><thead><tr><th>DATE</th><th>TYPE</th><th class="num">AMOUNT</th></tr></thead><tbody></tbody><tfoot></tfoot></table>
+        <table id="paymentTable">
+          <thead><tr><th>DATE</th><th>TYPE</th><th class="num">AMOUNT</th></tr></thead>
+          <tbody></tbody><tfoot></tfoot>
+        </table>
       </div>
     </div>
+
     <div class="card">
       <div class="title">OUTSTANDING BALANCE</div>
       <div class="summary">
@@ -68,6 +164,7 @@ th,td{border:1px solid #222;padding:7px 8px;vertical-align:top}th{background:var
     </div>
   </div>
 </div>
+
 <script>
 const $=id=>document.getElementById(id);
 const TEST_DATA=`| Afrilabs Pvt Ltd Abv | | | | |
@@ -108,65 +205,896 @@ HOTEL BOOKING Mr. AMARACHI MANMAK MADU - HOTEL BOOKING | | | | |
 | 27-Jul-26 | 4910 | | | 3795435.00 Cr |
 | 27-Jul-26 | | 3795435.00 Cr | | |
 | payment recevie from Afrilabs Pvt Ltd Abv`;
+
 function clean(s){return String(s??"").replace(/<br\s*\/?>/gi,"\n").replace(/&nbsp;/gi," ").replace(/\u00a0/g," ").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/\r/g,"").trim()}
-function esc(s){return String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function money(v){v=Number(v)||0;const n=Math.abs(v).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});return "NGN "+(v<0?"("+n+")":n)}
 function num(s){return parseFloat(String(s).replace(/,/g,""))||0}
 function parseDate(s){const m=String(s).match(/^(\d{1,2})[-\/]([A-Za-z]{3}|\d{1,2})[-\/](\d{2,4})$/);if(!m)return null;const mo={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};let y=+m[3];if(y<100)y+=2000;return new Date(y,/^[A-Za-z]/.test(m[2])?mo[m[2].toLowerCase()]:+m[2]-1,+m[1])}
 function dateText(d){return d?`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`:""}
 function dateKey(d){return d?`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`:""}
 function dateAt(s){const m=String(s).match(/^(\d{1,2}[-\/](?:[A-Za-z]{3}|\d{1,2})[-\/]\d{2,4})\b/);return m?parseDate(m[1]):null}
-function dateAtStart(s){return dateAt(s)}
-function amountFrom(s){const m=String(s??"").match(/(?:NGN\s*)?([\d,]+(?:\.\d+)?)\s*(Dr|Cr)\b/i);return m?{value:num(m[1]),side:m[2].toUpperCase()}:null}
-function findTicket(text){for(const re of [/\b\d{3}-\d{6,15}(?:\/\d{1,4}(?:-\d{1,4})?)?\b/,/\b\d{3}-\d{7,15}\b/,/\b[A-Z]\d{7,12}\b/i]){const m=text.match(re);if(m)return m}return null}
-function findRoute(text,ticketMatch){const tail=ticketMatch?text.slice(ticketMatch.index+ticketMatch[0].length):text;const m=tail.match(/\b[A-Z]{3}(?:\s+[A-Z]{3})+\b/i);return m?m[0].toUpperCase():""}
-function cleanupName(value){return String(value||"").replace(/\bRE[- ]?ISSUE(?:D)?\b/ig,"").replace(/\bREFUND(?:ED)?\b/ig,"").replace(/\bEMD\b/ig,"").replace(/\s*\/\s*$/,"").replace(/\s*-\s*\d+\s*$/i,"").replace(/\s{2,}/g," ").trim()}
-function splitNarrationUnits(text,knownPnr=""){let s=clean(text).replace(/\u000b/g,"\n"),u=[];s.split(/\n+/).forEach(part=>{part=part.replace(/\t+/g," ").replace(/\s{2,}/g," ").trim();if(!part)return;if(knownPnr){const re=new RegExp("(?=\\b"+knownPnr.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b\\s+)","ig");const bits=part.split(re).map(x=>x.trim()).filter(Boolean);if(bits.length>1){u.push(...bits);return}}u.push(part)});return u}
-function extract(line,ref=""){let raw=clean(line).replace(/\t+/g," ").replace(/\s+/g," ").trim();if(!raw)return{pnr:"",name:"",ticket:"",route:"",type:"Sale",raw:""};let type="Sale";if(/\bREFUND(?:ED)?\b/i.test(raw))type="Refund";else if(/\bRE[- ]?ISSUE(?:D)?\b/i.test(raw))type="Reissue";const serviceWords=/^(?:INSURANCE|HOTEL|BOOKING|HILLPARK|VISA|PACKAGE|EXTRA)$/i;let pnr="",pm=raw.match(/^([A-Z0-9]{5,8})\b/i);if(pm&&!serviceWords.test(pm[1]))pnr=pm[1].toUpperCase();if(!pnr&&/^[A-Z0-9]{5,8}\b/.test(ref||""))pnr=String(ref).split(/\s+/)[0].toUpperCase();const tm=findTicket(raw),ticket=tm?tm[0]:"",route=findRoute(raw,tm),upper=raw.toUpperCase(),marks=[];if(/\bRE[- ]?ISSUE(?:D)?\b/i.test(raw))marks.push("REISSUED");if(/\bREFUND(?:ED)?\b/i.test(raw))marks.push("REFUND");if(/\bEMD\b/i.test(raw))marks.push("EMD");let service="";if(/\bHOTEL\s+ISSUED\b/.test(upper))service="HOTEL ISSUED";else if(/\bHOTEL\s+BOOKING\b/.test(upper))service="HOTEL BOOKING";else if(/\bVISA\s+ISSUED\b/.test(upper))service="VISA ISSUED";else if(/\bINSURANCE\b/.test(upper))service="INSURANCE";let finalRoute=route||service||(marks.length?marks.join(" / "):"");let work=raw;if(pnr)work=work.replace(new RegExp("^"+pnr.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*","i"),"");if(ticket)work=work.replace(ticket,"");let name=work;if(service)name=name.replace(new RegExp("^"+service.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*","i"),"");if(finalRoute&&!service&&route){const idx=name.toUpperCase().lastIndexOf(route.toUpperCase());if(idx>=0)name=name.slice(0,idx)}name=name.replace(/\s*-\s*(?:HOTEL\s+)?BOOKING\b.*$/i,"");name=cleanupName(name);if(finalRoute)name=name.replace(new RegExp("\\s*"+finalRoute.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*$","i"),"").trim();if(!name)name=cleanupName(ref);return{pnr,name,ticket,route:finalRoute,type,raw}}
-function parse(raw){const source=clean(raw).replace(/\r\n?/g,"\n"),records=[];source.split("\n").forEach(line=>{const s=line.trim();if(!s)return;if(s.includes("|")){let c=s.split("|").map(x=>clean(x).trim());while(c.length&&!c[0])c.shift();while(c.length&&!c[c.length-1])c.pop();if(c.length)records.push(c)}else if(s.includes("\t"))records.push(s.split("\t").map(x=>clean(x).trim()));else records.push([s])});const rows=records.filter(r=>{const t=r.map(clean).join(" ").replace(/\s+/g," ").trim();return t&&!/^[|,:;\-]+$/.test(t)&&!/^['\"]+$/.test(t)&&!/^(Bill-wise Details|Pending Bills|Date|Ref\.?\s*No\.?|Pending|Amount)$/i.test(t)});let company="";for(const r of rows){const t=r.join(" ").trim();if(!dateAtStart(t)&&!amountFrom(t)&&!/^(Journal|Receipt|Payment)\b/i.test(t)){company=t;break}}const visible=[],payments=[];let bookingNet=0,openingBalance=0,openingDate="",openingCaptured=false;const rowDate=r=>r?.[0]?dateAtStart(clean(r[0])):null,rowText=r=>(r||[]).map(clean).filter(Boolean).join(" ").replace(/\s+/g," ").trim(),rowAmount=r=>{for(const c of(r||[])){const a=amountFrom(c);if(a)return a}return null};for(let i=0;i<rows.length;i++){const r=rows[i],d=rowDate(r);if(!d)continue;const text=rowText(r),ownAmt=rowAmount(r);if(/\bopening\s+balance\b/i.test(text)&&ownAmt){if(!openingCaptured){openingBalance=ownAmt.side.toUpperCase()==="CR"?-Math.abs(ownAmt.value):Math.abs(ownAmt.value);openingDate=dateText(d);openingCaptured=true}continue}const rp=text.match(/\b(Receipt|Payment)\b/i);if(rp&&ownAmt){const type=rp[1].toUpperCase();payments.push({date:dateText(d),type,amount:type==="RECEIPT"?Math.abs(ownAmt.value):-Math.abs(ownAmt.value)});continue}let ref="";for(let c=1;c<r.length;c++){const cell=clean(r[c]);if(!cell)continue;if(amountFrom(cell))continue;if(/^(Journal|Receipt|Payment)$/i.test(cell))continue;if(/^\d{2,8}$/.test(cell)&&/Journal|Receipt|Payment/i.test(r.join(" ")))continue;ref=cell;break}let j=i+1,journal=null;if(j<rows.length&&rowDate(rows[j])&&dateKey(rowDate(rows[j]))===dateKey(d)){const jt=rowText(rows[j]),ja=rowAmount(rows[j]),jm=jt.match(/\bJournal\s+(\S+)/i);if(ja&&jm){journal={no:jm[1],amount:ja.value,side:ja.side};j++}else{const rm=jt.match(/\b(Receipt|Payment)\b/i);if(ja&&rm){const type=rm[1].toUpperCase();payments.push({date:dateText(d),type,amount:type==="RECEIPT"?Math.abs(ja.value):-Math.abs(ja.value)});i=j;continue}}}if(!journal){if(/\bJournal\b/i.test(text)&&ownAmt)bookingNet+=ownAmt.side.toUpperCase()==="CR"?-Math.abs(ownAmt.value):Math.abs(ownAmt.value);continue}const narration=[];let k=j;while(k<rows.length&&!rowDate(rows[k])){const cells=rows[k].map(clean).filter(Boolean);if(cells.length){const n=cells.join(" ");if(!/^['\"]+$/.test(n)&&!/^(Journal|Receipt|Payment)\b/i.test(n))narration.push(n)}k++}let units=[];narration.forEach(n=>splitNarrationUnits(n,ref).forEach(u=>{u=clean(u).replace(/^['\"]+|['\"]+$/g,"").trim();if(u&&!/^['\"]+$/.test(u))units.push(u)}));if(!units.length)units=[ref];const infos=units.map(u=>extract(u,ref)).filter(x=>x.raw),pax=infos.filter((x,idx)=>{if(!x.raw||/^['\"]+$/.test(clean(x.raw)))return false;return idx===infos.findIndex(y=>y.raw===x.raw)});if(!pax.length){i=k-1;continue}const all=narration.join(" ")+" "+ref,refund=/\bREFUND(?:ED)?\b/i.test(all),reissue=/\bRE[- ]?ISSUE(?:D)?\b/i.test(all);let signed=journal.side.toUpperCase()==="CR"?-Math.abs(journal.amount):Math.abs(journal.amount);if(refund)signed=-Math.abs(journal.amount);if(reissue)signed=Math.abs(journal.amount);bookingNet+=signed;const count=pax.length,base=Math.round((signed/count)*100)/100;let used=0;pax.forEach((x,idx)=>{const amount=idx===count-1?Math.round((signed-used)*100)/100:base;used=Math.round((used+amount)*100)/100;let route=x.route||"";if(!route){const marks=[];if(/\bRE[- ]?ISSUE(?:D)?\b/i.test(x.raw))marks.push("REISSUED");if(/\bREFUND(?:ED)?\b/i.test(x.raw))marks.push("REFUND");if(/\bEMD\b/i.test(x.raw))marks.push("EMD");route=marks.join(" / ")}visible.push({date:dateText(d),journalNo:journal.no||"",pnr:x.pnr||ref||"",name:x.name||"-",ticket:x.ticket||"-",route:route||"-",amount,type:x.type,chd:/\b(?:CHD|INF)\b/i.test(x.name)})});i=k-1}const paymentNet=payments.reduce((s,p)=>s+p.amount,0);if(openingCaptured)visible.unshift({date:openingDate,journalNo:"",pnr:"OPENING BALANCE",name:"Opening Balance",ticket:"-",route:"-",amount:openingBalance,type:"Opening",chd:false});return{company,journals:visible,visible,payments,bookingNet,paymentNet,openingBalance,balance:openingBalance+bookingNet-paymentNet}}
-function parseForMe(raw){const source=clean(raw).replace(/\r\n?/g,"\n"),rows=[];source.split("\n").forEach(line=>{let s=line.trim();if(!s)return;if(s.includes("|")){let c=s.split("|").map(x=>clean(x).trim());while(c.length&&!c[0])c.shift();while(c.length&&!c[c.length-1])c.pop();if(c.length)rows.push(c)}else if(s.includes("\t"))rows.push(s.split("\t").map(x=>clean(x).trim()));else rows.push([s])});let company="";const entries=[];for(const r of rows){const t=r.join(" ").replace(/\s+/g," ").trim();if(!t||/^[-:]+$/.test(t)||/^['\"]+$/.test(t)||/^(Bill-wise Details|Pending Bills|Date|Ref\.?\s*No\.?|Pending|Amount)$/i.test(t))continue;const d=dateAtStart(t),a=amountFrom(t);if(!d||!a)continue;if(!company&&!/^(Journal|Receipt|Payment)\b/i.test(t))company=t;let ref="";for(let i=1;i<r.length;i++){const c=clean(r[i]);if(c&&!amountFrom(c)&&!/^(Journal|Receipt|Payment)$/i.test(c)){ref=c;break}}if(!ref)ref=t.replace(/^\d{1,2}[-\/](?:[A-Za-z]{3}|\d{1,2})[-\/]\d{2,4}\s*/i,"").replace(/[\d,]+(?:\.\d+)?\s*(?:Dr|Cr)\b/i,"").trim();entries.push({date:dateText(d),ref,amount:(a.side.toUpperCase()==="DR"?1:-1)*a.value,side:a.side})}const upper=[],lower=[];let opening=null;for(const e of entries){if(/\bopening\s+balance\b/i.test(e.ref)){if(!opening)opening=e;continue}if(/^\d+$/.test(e.ref.trim()))lower.push({date:e.date,type:e.side.toUpperCase()==="CR"?"RECEIPT":"PAYMENT",amount:e.side.toUpperCase()==="CR"?Math.abs(e.amount):-Math.abs(e.amount),ref:e.ref.trim()});else if(e.ref.trim())upper.push({date:e.date,pnr:e.ref.trim(),amount:e.amount})}const openingAmount=opening?opening.amount:0,bookingNet=upper.reduce((s,e)=>s+e.amount,0),paymentNet=lower.reduce((s,e)=>s+e.amount,0);return{mode:"me",company,upper,lower,openingBalance:openingAmount,visible:upper.map(e=>({date:e.date,journalNo:"",pnr:e.pnr,name:"",ticket:"",route:"",amount:e.amount,type:"Sale",chd:false})),payments:lower,bookingNet,paymentNet,balance:openingAmount+bookingNet-paymentNet,openingDate:opening?opening.date:""}}
-function parseFull(raw){
-  const data=parse(raw);
-  data.mode="client";
-  data.full=true;
-  return data;
+function amountAt(s){const m=String(s).match(/(?:NGN\s*)?([\d,]+(?:\.\d+)?)\s*(Dr|Cr)\b/i);return m?{value:num(m[1]),side:m[2].toUpperCase()}:null}
+function isJournal(s){return /^(\d{1,2}[-\/](?:[A-Za-z]{3}|\d{1,2})[-\/]\d{2,4})\s+Journal\b/i.test(s)}
+function isRP(s){return /^(\d{1,2}[-\/](?:[A-Za-z]{3}|\d{1,2})[-\/]\d{2,4})\s+(Receipt|Payment)\b/i.test(s)}
+
+function rowsFrom(raw){
+  const src=clean(raw);
+  const rows=[];
+  src.split("\n").forEach(line=>{
+    let s=line.trim(); if(!s)return;
+    if(s.includes("|")){
+      let cells=s.split("|").map(x=>x.trim());
+      while(cells.length && cells[0]==="")cells.shift();
+      while(cells.length && cells[cells.length-1]==="")cells.pop();
+      // Keep each non-empty cell as an ordered token. Embedded <br> stays newline inside cell.
+      cells.forEach(c=>{if(c)rows.push(c)})
+    }else rows.push(s)
+  });
+  return rows.filter(s=>!/^[-:]+$/.test(s)&&!/^(Bill-wise Details|Pending Bills|Date|Ref\. No\.?|Pending|Amount)$/i.test(s));
 }
-function render(data){\n  const outstandingCard=$("result").querySelector(".card:last-child");\n  if(outstandingCard) outstandingCard.style.display=data.full?"none":"";\n
+
+function splitNarrationUnits(text, knownPnr=""){
+  let s=clean(text).replace(/\r\n?/g,"\n");
+  // HTML/Excel pasted line breaks and blank lines are real narration boundaries.
+  s=s.replace(/\u000b/g,"\n");
+  let units=[];
+  s.split(/\n+/).forEach(part=>{
+    part=part.replace(/\t+/g," ").replace(/\s{2,}/g," ").trim();
+    if(!part)return;
+    // When <br> was lost and several passenger records were concatenated on one line,
+    // split only at a repeated known PNR. This avoids splitting names accidentally.
+    if(knownPnr){
+      const re=new RegExp("(?=\\b"+knownPnr.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b\\s+)","ig");
+      const bits=part.split(re).map(x=>x.trim()).filter(Boolean);
+      if(bits.length>1){units.push(...bits);return;}
+    }
+    units.push(part);
+  });
+  return units;
+}
+
+function findTicket(text){
+  const patterns=[
+    /\b\d{3}-\d{6,15}(?:\/\d{1,4}(?:-\d{1,4})?)?\b/,
+    /\b\d{3}-\d{7,15}\b/,
+    /\b[A-Z]\d{7,12}\b/i
+  ];
+  for(const re of patterns){
+    const m=text.match(re);
+    if(m)return m;
+  }
+  return null;
+}
+
+function findRoute(text, ticketMatch){
+  const tail=ticketMatch ? text.slice(ticketMatch.index+ticketMatch[0].length) : text;
+  const airport=/\b[A-Z]{3}(?:\s+[A-Z]{3})+\b/i;
+  const m=tail.match(airport);
+  return m ? m[0].toUpperCase() : "";
+}
+
+function cleanupName(value){
+  return String(value||"")
+    .replace(/\bRE[- ]?ISSUE(?:D)?\b/ig,"")
+    .replace(/\bREFUND(?:ED)?\b/ig,"")
+    .replace(/\bEMD\b/ig,"")
+    .replace(/\s*\/\s*$/,"")
+    .replace(/\s*-\s*\d+\s*$/,"")
+    .replace(/\s{2,}/g," ")
+    .trim();
+}
+
+function extract(line, ref=""){
+  let raw=clean(line).replace(/\t+/g," ").replace(/\s+/g," ").trim();
+  if(!raw) return {pnr:"",name:"",ticket:"",route:"",type:"Sale",raw:""};
+
+  let type="Sale";
+  if(/\bREFUND(?:ED)?\b/i.test(raw)) type="Refund";
+  else if(/\bRE[- ]?ISSUE(?:D)?\b/i.test(raw)) type="Reissue";
+
+  const serviceWords=/^(?:INSURANCE|HOTEL|BOOKING|HILLPARK|VISA|PACKAGE|EXTRA)$/i;
+  let pnr="";
+  const pm=raw.match(/^([A-Z0-9]{5,8})\b/i);
+  if(pm && !serviceWords.test(pm[1])) pnr=pm[1].toUpperCase();
+  if(!pnr && /^[A-Z0-9]{5,8}\b/.test(ref||"")) pnr=String(ref).split(/\s+/)[0].toUpperCase();
+
+  const tm=findTicket(raw);
+  const ticket=tm?tm[0]:"";
+  const route=findRoute(raw,tm);
+
+  const upper=raw.toUpperCase();
+  const markers=[];
+  if(/\bRE[- ]?ISSUE(?:D)?\b/i.test(raw)) markers.push("REISSUED");
+  if(/\bREFUND(?:ED)?\b/i.test(raw)) markers.push("REFUND");
+  if(/\bEMD\b/i.test(raw)) markers.push("EMD");
+
+  let service="";
+  if(/\bHOTEL\s+ISSUED\b/.test(upper)) service="HOTEL ISSUED";
+  else if(/\bHOTEL\s+BOOKING\b/.test(upper)) service="HOTEL BOOKING";
+  else if(/\bVISA\s+ISSUED\b/.test(upper)) service="VISA ISSUED";
+  else if(/\bINSURANCE\b/.test(upper)) service="INSURANCE";
+  else if(/\bEXTRA\s+BAG(?:GAGE|GEAGE)?\b/.test(upper)) service="EXTRA BAGGEAGE";
+  else if(/\bPACKAGE\s+DONE\b/.test(upper)) service="PACKAGE DONE";
+
+  let finalRoute=route||service||(markers.length?markers.join(" / "):"");
+
+  let work=raw;
+  if(pnr) work=work.replace(new RegExp("^"+pnr.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*","i"),"");
+  if(ticket) work=work.replace(ticket,"");
+
+  let name=work;
+  if(service){
+    name=name.replace(new RegExp("^"+service.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*","i"),"");
+  }
+  if(finalRoute && !service && route){
+    const idx=name.toUpperCase().lastIndexOf(route.toUpperCase());
+    if(idx>=0) name=name.slice(0,idx);
+  }
+  // Service names often have a trailing "- HOTEL BOOKING" or "- HOTEL".
+  name=name.replace(/\s*-\s*(?:HOTEL\s+)?BOOKING\b.*$/i,"");
+  name=cleanupName(name);
+
+  // Never allow the route/marker to leak back into the name.
+  if(finalRoute){
+    name=name.replace(new RegExp("\\s*"+finalRoute.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*$","i"),"").trim();
+  }
+
+  if(!name) name=cleanupName(ref);
+  return {pnr,name,ticket,route:finalRoute,type,raw};
+}
+
+function dateAtStart(s){return dateAt(s)}
+function amountFrom(s){
+  const m=String(s??"").match(/(?:NGN\s*)?([\d,]+(?:\.\d+)?)\s*(Dr|Cr)\b/i);
+  return m ? {value:parseFloat(m[1].replace(/,/g,"")),side:m[2].toUpperCase()} : null;
+}
+
+function parseForMe(raw){
+  const source=clean(raw).replace(/\r\n?/g,"\n");
+  const rows=[];
+  source.split("\n").forEach(line=>{
+    let s=line.trim(); if(!s)return;
+    if(s.includes("|")){
+      let cells=s.split("|").map(c=>clean(c).trim());
+      while(cells.length&&cells[0]==="")cells.shift();
+      while(cells.length&&cells[cells.length-1]==="")cells.pop();
+      if(cells.length)rows.push(cells);
+    }else if(s.includes("\t")){
+      rows.push(s.split("\t").map(c=>clean(c).trim()));
+    }else rows.push([s]);
+  });
+
+  let company="";
+  const entries=[];
+  for(const r of rows){
+    const t=r.join(" ").replace(/\s+/g," ").trim();
+    if(!t || /^[-:]+$/.test(t) ||
+       /^(Bill-wise Details|Pending Bills|Date|Ref\.?\s*No\.?|Pending|Amount)$/i.test(t))continue;
+    const d=dateAtStart(t), a=amountFrom(t);
+    if(!d && !a && !/^(Journal|Receipt|Payment)\b/i.test(t) && !/^\d{1,2}-[A-Za-z]{3}-\d{2}\s+to\b/i.test(t) && !company){
+      company=t; continue;
+    }
+    if(!d || !a)continue;
+
+    // Exact FOR ME rule:
+    // actual PNR-looking reference -> upper statement box.
+    // numeric-only reference (26,49,357...) -> lower Receipt/Payment box.
+    let ref="";
+    for(let i=1;i<r.length;i++){
+      const c=clean(r[i]);
+      if(c && !amountFrom(c)){ref=c;break}
+    }
+    if(!ref){
+      ref=t.replace(/^\d{1,2}[-\/](?:[A-Za-z]{3}|\d{1,2})[-\/]\d{2,4}\s*/,"")
+            .replace(/[\d,]+(?:\.\d+)?\s*(?:Dr|Cr)\b/i,"").trim();
+    }
+    const sign=a.side.toUpperCase()==="DR"?1:-1;
+    entries.push({date:dateText(d),ref,amount:sign*a.value,side:a.side});
+  }
+
+  const upper=[], lower=[];
+  let opening=null;
+  entries.forEach(e=>{
+    if(/^opening\s+balance$/i.test(e.ref) || /\bopening\s+balance\b/i.test(e.ref)){
+      if(opening===null)opening=e;
+      return;
+    }
+    const refBase=e.ref.trim();
+    const numeric=/^\d+$/.test(refBase);
+    const pnrLike=/^[A-Z0-9]{5,8}(?:(?:\s+|)(?:REFUND|REFUNDED|REISSUE|REISSUED|EMD)(?:\s*\d+)?)?$/i.test(refBase);
+    if(pnrLike && !numeric){
+      upper.push({date:e.date,pnr:refBase,amount:e.amount});
+    }else if(numeric){
+      // FOR ME lower box: Cr = Receipt +, Dr = Payment -
+      lower.push({date:e.date,type:e.side.toUpperCase()==="CR"?"RECEIPT":"PAYMENT",amount:e.side.toUpperCase()==="CR"?Math.abs(e.amount):-Math.abs(e.amount),ref:refBase});
+    }else if(refBase){
+      // Anything not numeric and not a PNR stays in upper box only when it
+      // carries an obvious PNR token; otherwise do not invent a PNR.
+      const pm=refBase.match(/\b([A-Z0-9]{5,8})\b/i);
+      if(pm && !/^\d+$/.test(pm[1])){
+        upper.push({date:e.date,pnr:pm[1].toUpperCase()+refBase.slice(pm[1].length),amount:e.amount});
+      }
+    }
+  });
+
+  const openingAmount=opening?opening.amount:0;
+  const bookingNet=upper.reduce((s,e)=>s+e.amount,0);
+  const paymentNet=lower.reduce((s,e)=>s+e.amount,0);
+  const balance=openingAmount+bookingNet+paymentNet*-1; // lower already signed
+  return {
+    mode:"me", company, upper, lower,
+    visible:upper.map(e=>({date:e.date,journalNo:"",pnr:e.pnr,name:"",ticket:"",route:"",amount:e.amount,type:"Sale",chd:false})),
+    payments:lower,
+    bookingNet, paymentNet, openingBalance:openingAmount, balance
+  };
+}
+
+function parseFullStatement(raw){
+  const source=clean(raw).replace(/\r\n?/g,"\n");
+  const lines=source.split("\n").map(x=>x.trim()).filter(Boolean);
+
+  // FULL STATEMENT has its own date parser so formats such as "02-Sept-26"
+  // work without changing the existing FOR CLIENT / FOR ME parsers.
+  function fullParseDate(s){
+    const m=String(s).match(/^(\d{1,2})[-\/]([A-Za-z]{3,5}|\d{1,2})[-\/](\d{2,4})\b/);
+    if(!m)return null;
+    const mo={
+      jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,
+      sep:8,sept:8,oct:9,nov:10,dec:11
+    };
+    let y=+m[3]; if(y<100)y+=2000;
+    const mon=/^[A-Za-z]/.test(m[2]) ? mo[m[2].toLowerCase()] : (+m[2]-1);
+    if(mon===undefined || mon<0 || mon>11)return null;
+    return new Date(y,mon,+m[1]);
+  }
+  const dateRe=/^\d{1,2}[-\/](?:[A-Za-z]{3,5}|\d{1,2})[-\/]\d{2,4}\b/;
+  let company="";
+  const tx=[];
+
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i];
+    if(!dateRe.test(line)){
+      if(!company &&
+         !/^(Ledger Account|Date\s+Particulars|1[-\/]\w+[-\/]\d{2,4}\s+to\b|Debit|Credit)$/i.test(line)){
+        company=line;
+      }
+      continue;
+    }
+
+    const d=fullParseDate(line);
+    if(!d)continue;
+
+    const vm=line.match(/\b(Journal|Receipt|Payment)\b/i);
+    if(!vm)continue;
+    const vch=vm[1].toUpperCase();
+
+    // Amount is the final numeric value on the dated ledger row.
+    const am=line.match(/([\d,]+(?:\.\d+)?)\s*$/);
+    if(!am)continue;
+    const amount=num(am[1]);
+
+    // In this Ledger Account export:
+    // Cr + Journal = booking/debit-side client transaction
+    // Dr + Receipt/Payment = money received/paid.
+    const side=(line.match(/\b(Dr|Cr)\b/i)||[])[1]?.toUpperCase()||"";
+    const narration=[];
+    let j=i+1;
+    while(j<lines.length && !dateRe.test(lines[j])){
+      const n=lines[j].trim();
+      if(n && !/^(Ledger Account|Date\s+Particulars|Debit|Credit)$/i.test(n)) narration.push(n);
+      j++;
+    }
+
+    tx.push({date:dateText(d),vch,amount,side,narration});
+    i=j-1;
+  }
+
+  const journals=[], payments=[];
+  let bookingNet=0, paymentNet=0;
+
+  tx.forEach(t=>{
+    const all=t.narration.join("\n").trim();
+
+    if(t.vch==="JOURNAL"){
+      // Only narration creates client rows. Never invent passenger data.
+      const infos=[];
+      splitNarrationUnits(all).forEach(u=>{
+        // Ledger exports can wrap one quoted narration across multiple lines.
+        // Remove only the surrounding quote characters; the actual PNR/ticket/text stays intact.
+        u=clean(u).replace(/^["']+|["']+$/g,"").trim();
+        const info=extract(u,"");
+        if(info.raw)infos.push(info);
+      });
+
+      // Every distinct narration line is a real record.
+      // This is important for EMD: same PNR + EMD ticket must remain a separate row
+      // with ROUTE = "EMD", not become a fake "-" row and not be merged away.
+      const pax=infos;
+
+      // Cr Journal is a booking amount in this ledger format.
+      const signed=(t.side==="CR") ? Math.abs(t.amount) : -Math.abs(t.amount);
+      bookingNet+=signed;
+
+      if(pax.length){
+        // FULL STATEMENT ONLY:
+        // One Journal transaction = ONE displayed row.
+        // Show only the FIRST passenger/ticket from the narration,
+        // but keep the COMPLETE original Journal amount.
+        // Never divide the amount between multiple passengers.
+        const x=pax[0];
+        journals.push({
+          date:t.date,journalNo:"",pnr:x.pnr||"-",name:x.name||"-",
+          ticket:x.ticket||"-",route:x.route||"-",amount:signed,
+          type:x.type||"Sale",chd:/\b(?:CHD|INF)\b/i.test(x.name||"")
+        });
+      }else{
+        journals.push({
+          date:t.date,journalNo:"",pnr:"-",name:all||"-",ticket:"-",
+          route:"-",amount:signed,type:"Sale",chd:false
+        });
+      }
+    }else{
+      // Dr Receipt = money received (+). Dr Payment = money paid (-).
+      const signed=t.vch==="RECEIPT" ? Math.abs(t.amount) : -Math.abs(t.amount);
+      payments.push({date:t.date,type:t.vch,amount:signed});
+      paymentNet+=signed;
+    }
+  });
+
+  return {
+    mode:"full",company,visible:journals,journals,payments,
+    bookingNet,paymentNet,openingBalance:0,
+    balance:bookingNet-paymentNet
+  };
+}
+function parse(raw){
+  const source=clean(raw).replace(/\r\n?/g,"\n");
+  const records=[];
+
+  source.split("\n").forEach(line=>{
+    const s=line.trim();
+    if(!s)return;
+    if(s.includes("|")){
+      let cells=s.split("|").map(c=>clean(c).trim());
+      while(cells.length && !cells[0])cells.shift();
+      while(cells.length && !cells[cells.length-1])cells.pop();
+      if(cells.length)records.push(cells);
+    }else if(s.includes("\t")){
+      records.push(s.split("\t").map(c=>clean(c).trim()));
+    }else{
+      records.push([s]);
+    }
+  });
+
+  // Remove only structural/header noise and quote-only artifacts.
+  const rows=records.filter(r=>{
+    const t=r.map(clean).join(" ").replace(/\s+/g," ").trim();
+    if(!t)return false;
+    if(/^[|,:;\-]+$/.test(t))return false;
+    if(/^["']+$/.test(t))return false;
+    if(/^(Bill-wise Details|Pending Bills|Date|Ref\.?\s*No\.?|Pending|Amount)$/i.test(t))return false;
+    return true;
+  });
+
+  let company="";
+  for(const r of rows){
+    const t=r.map(clean).join(" ").replace(/\s+/g," ").trim();
+    if(!dateAtStart(t) && !amountFrom(t) && !/^\s*(Journal|Receipt|Payment)\b/i.test(t)){
+      company=t;break;
+    }
+  }
+
+  const visible=[],payments=[];
+  let bookingNet=0;
+  let openingBalance=0, openingDate="", openingCaptured=false;
+
+  const rowDate=r=>r?.[0]?dateAtStart(clean(r[0])):null;
+  const rowText=r=>(r||[]).map(clean).filter(Boolean).join(" ").replace(/\s+/g," ").trim();
+  const rowAmount=r=>{
+    for(const c of (r||[])){const a=amountFrom(c);if(a)return a}
+    return null;
+  };
+
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i], d=rowDate(r);
+    if(!d)continue;
+
+    const text=rowText(r);
+    const ownAmt=rowAmount(r);
+
+    // Opening balance is shown as the first statement row and used in outstanding,
+    // but is NOT included in bookingNet (avoids double-counting).
+    if(/\bopening\s+balance\b/i.test(text) && ownAmt){
+      if(!openingCaptured){
+        openingBalance=ownAmt.side.toUpperCase()==="CR"?-Math.abs(ownAmt.value):Math.abs(ownAmt.value);
+        openingDate=dateText(d);
+        openingCaptured=true;
+      }
+      continue;
+    }
+
+    // Explicit receipt/payment rows: only date, type, amount. Narration ignored.
+    const rp=text.match(/\b(Receipt|Payment)\b/i);
+    if(rp && ownAmt){
+      const type=rp[1].toUpperCase();
+      payments.push({
+        date:dateText(d),
+        type,
+        amount:type==="RECEIPT"?Math.abs(ownAmt.value):-Math.abs(ownAmt.value)
+      });
+      continue;
+    }
+
+    // Extract the reference ONLY from the reference cells of the dated Bill-wise row.
+    let ref="";
+    for(let c=1;c<r.length;c++){
+      const cell=clean(r[c]);
+      if(!cell)continue;
+      if(amountFrom(cell))continue;
+      if(/^(Journal|Receipt|Payment)$/i.test(cell))continue;
+      // Voucher number is often in a separate cell after Journal; don't use it as ref.
+      if(/^\d{2,8}$/.test(cell) && /Journal|Receipt|Payment/i.test(r.join(" ")))continue;
+      ref=cell;break;
+    }
+
+    // A repeated same-date Journal row is the authoritative voucher amount.
+    let j=i+1, journal=null;
+    if(j<rows.length && rowDate(rows[j]) && dateAtStart(rows[j][0]) &&
+       dateKey(rowDate(rows[j]))===dateKey(d)){
+      const jt=rowText(rows[j]), ja=rowAmount(rows[j]), jm=jt.match(/\bJournal\s+(\S+)/i);
+      if(ja && jm){
+        journal={no:jm[1],amount:ja.value,side:ja.side};
+        j++;
+      }else{
+        const rm=jt.match(/\b(Receipt|Payment)\b/i);
+        if(ja && rm){
+          const type=rm[1].toUpperCase();
+          payments.push({date:dateText(d),type,amount:type==="RECEIPT"?Math.abs(ja.value):-Math.abs(ja.value)});
+          i=j;
+          continue;
+        }
+      }
+    }
+
+    // Standalone dated Journal: accounting-only, never a client row.
+    if(!journal){
+      if(/\bJournal\b/i.test(text) && ownAmt){
+        bookingNet += ownAmt.side.toUpperCase()==="CR"?-Math.abs(ownAmt.value):Math.abs(ownAmt.value);
+      }
+      continue;
+    }
+
+    // Narration is everything until the next dated row.
+    const narration=[];
+    let k=j;
+    while(k<rows.length && !rowDate(rows[k])){
+      const cells=rows[k].map(clean).filter(Boolean);
+      if(cells.length){
+        const n=cells.join(" ");
+        // Ignore structural fragments / quotes. Do NOT invent a passenger.
+        if(!/^["']+$/.test(n) && !/^(Journal|Receipt|Payment)\b/i.test(n)){
+          narration.push(n);
+        }
+      }
+      k++;
+    }
+
+    // Split only on actual narration boundaries: <br>/newlines/tabs already preserved
+    // by clean(); repeated PNR at the start is also a safe boundary.
+    let units=[];
+    narration.forEach(n=>{
+      splitNarrationUnits(n, ref).forEach(u=>{
+        u=clean(u).replace(/^["']+|["']+$/g,"").trim();
+        if(u && !/^["']+$/.test(u))units.push(u);
+      });
+    });
+
+    // A single narration cell can contain multiple passenger records separated by <br>.
+    if(!units.length){
+      units=[ref];
+    }
+
+    const infos=units.map(u=>extract(u,ref)).filter(x=>x.raw);
+    const pax=infos.filter((x,idx)=>{
+      if(!x.raw || /^["']+$/.test(clean(x.raw)))return false;
+      return idx===infos.findIndex(y=>y.raw===x.raw);
+    });
+    if(!pax.length){
+      // Source has no usable narration: do not generate fake data.
+      i=k-1; continue;
+    }
+
+    const all=narration.join(" ")+" "+ref;
+    const refund=/\bREFUND(?:ED)?\b/i.test(all);
+    const reissue=/\bRE[- ]?ISSUE(?:D)?\b/i.test(all);
+
+    let signed=journal.side.toUpperCase()==="CR"?-Math.abs(journal.amount):Math.abs(journal.amount);
+    if(refund)signed=-Math.abs(journal.amount);
+    if(reissue)signed=Math.abs(journal.amount);
+
+    bookingNet += signed;
+
+    // FULL STATEMENT RULE:
+    // One Journal transaction = ONE output row.
+    // If narration contains multiple passengers/tickets, show ONLY the
+    // first passenger's details, while keeping the FULL original journal amount.
+    // Do NOT divide the amount between passengers.
+    const x=pax[0];
+
+    let route=x.route||"";
+    if(!route){
+      const marks=[];
+      if(/\bRE[- ]?ISSUE(?:D)?\b/i.test(x.raw))marks.push("REISSUED");
+      if(/\bREFUND(?:ED)?\b/i.test(x.raw))marks.push("REFUND");
+      if(/\bEMD\b/i.test(x.raw))marks.push("EMD");
+      route=marks.join(" / ");
+    }
+
+    visible.push({
+      date:dateText(d),
+      journalNo:journal.no||"",
+      pnr:x.pnr||ref||"",
+      name:x.name||"-",
+      ticket:x.ticket||"-",
+      route:route||"-",
+      amount:signed,
+      type:x.type,
+      chd:/\b(?:CHD|INF)\b/i.test(x.name)
+    });
+
+    i=k-1;
+  }
+
+  const paymentNet=payments.reduce((s,p)=>s+p.amount,0);
+
+  // Client-visible opening balance row, separate from booking transactions.
+  if(openingCaptured){
+    visible.unshift({
+      date:openingDate,
+      journalNo:"",
+      pnr:"OPENING BALANCE",
+      name:"Opening Balance",
+      ticket:"-",
+      route:"-",
+      amount:openingBalance,
+      type:"Opening",
+      chd:false
+    });
+  }
+
+  return {
+    company,
+    journals:visible,
+    visible,
+    payments,
+    bookingNet,
+    paymentNet,
+    openingBalance,
+    balance:openingBalance+bookingNet-paymentNet
+  };
+}
+function render(data){
   $("result").style.display="block";
+
+  if(data.mode==="full"){
+    $("journalTitle").textContent="FULL STATEMENT"+(data.company?" — "+data.company:"");
+    const jt=$("journalTable");
+    jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>JOURNAL NO.</th><th>PNR</th><th>NAME</th><th>TICKET NO.</th><th>ROUTE</th><th class="num">AMOUNT</th></tr>';
+    let jhtml="";
+    for(const r of data.visible){
+      jhtml+=`<tr${r.chd?' class="chd"':''}><td>${esc(r.date)}</td><td>${esc(r.journalNo)}</td><td>${esc(r.pnr)}</td><td>${esc(r.name)}</td><td>${esc(r.ticket)}</td><td>${esc(r.route)}</td><td class="num">${money(r.amount)}</td></tr>`;
+    }
+    jt.querySelector("tbody").innerHTML=jhtml || '<tr><td colspan="7" style="text-align:center">No Journal entries found.</td></tr>';
+    jt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="6">BOOKING NET</td><td class="num">${money(data.bookingNet)}</td></tr>`;
+
+    const pt=$("paymentTable");
+    pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>TYPE</th><th class="num">AMOUNT</th></tr>';
+    let phtml="";
+    for(const r of data.payments){
+      phtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}</td><td class="num">${money(r.amount)}</td></tr>`;
+    }
+    pt.querySelector("tbody").innerHTML=phtml || '<tr><td colspan="3" style="text-align:center">No Receipt/Payment entries found.</td></tr>';
+    pt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="2">PAYMENT NET</td><td class="num">${money(data.paymentNet)}</td></tr>`;
+
+    $("bookingNet").textContent=money(data.bookingNet);
+    $("paymentNet").textContent=money(data.paymentNet);
+    $("balance").textContent=money(data.balance);
+    $("status").innerHTML=`FULL STATEMENT: Booking Net ${money(data.bookingNet)} − Payment Net ${money(data.paymentNet)} = Outstanding ${money(data.balance)}.`;
+    return;
+  }
+
   if(data.mode==="me"){
     $("journalTitle").textContent="STATEMENT / FOR ME"+(data.company?" — "+data.company:"");
-    const jt=$("journalTable");jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>PNR / REF. NO.</th><th class="num">AMOUNT</th></tr>';
-    let jhtml="";if(data.openingBalance!==0)jhtml+=`<tr><td>${esc(data.openingDate||"31/12/2025")}</td><td>OPENING BALANCE</td><td class="num">${money(data.openingBalance)}</td></tr>`;
-    for(const r of data.upper)jhtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.pnr)}</td><td class="num">${money(r.amount)}</td></tr>`;
-    jt.querySelector("tbody").innerHTML=jhtml||'<tr><td colspan="3" style="text-align:center">No PNR entries found.</td></tr>';
+    const jt=$("journalTable");
+    jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>PNR / REF. NO.</th><th class="num">AMOUNT</th></tr>';
+
+    let jhtml="";
+    if(data.openingBalance!==0){
+      jhtml+=`<tr><td>${esc(data.openingDate||"31/12/2025")}</td><td>OPENING BALANCE</td><td class="num">${money(data.openingBalance)}</td></tr>`;
+    }
+    for(const r of data.upper){
+      jhtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.pnr)}</td><td class="num">${money(r.amount)}</td></tr>`;
+    }
+    jt.querySelector("tbody").innerHTML=jhtml || '<tr><td colspan="3" style="text-align:center">No PNR entries found.</td></tr>';
     jt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="2">STATEMENT TOTAL</td><td class="num">${money(data.openingBalance+data.bookingNet)}</td></tr>`;
-    const pt=$("paymentTable");pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>RECEIPT / PAYMENT</th><th class="num">AMOUNT</th></tr>';
-    let phtml="";for(const r of data.lower)phtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}${r.ref?" — "+esc(r.ref):""}</td><td class="num">${money(r.amount)}</td></tr>`;
-    pt.querySelector("tbody").innerHTML=phtml||'<tr><td colspan="3" style="text-align:center">No receipt/payment entries found.</td></tr>';
+
+    const pt=$("paymentTable");
+    pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>RECEIPT / PAYMENT</th><th class="num">AMOUNT</th></tr>';
+    let phtml="";
+    for(const r of data.lower){
+      phtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}${r.ref?" — "+esc(r.ref):""}</td><td class="num">${money(r.amount)}</td></tr>`;
+    }
+    pt.querySelector("tbody").innerHTML=phtml || '<tr><td colspan="3" style="text-align:center">No receipt/payment entries found.</td></tr>';
     pt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="2">RECEIPT / PAYMENT NET</td><td class="num">${money(data.paymentNet)}</td></tr>`;
-    $("bookingNet").textContent=money(data.openingBalance+data.bookingNet);$("paymentNet").textContent=money(data.paymentNet);$("balance").textContent=money(data.balance);
-    $("status").innerHTML=`FOR ME: Opening ${money(data.openingBalance)} + PNR entries ${money(data.bookingNet)} + Receipt/Payment effect ${money(data.paymentNet)} = Outstanding ${money(data.balance)}.`;return;
+
+    $("bookingNet").textContent=money(data.openingBalance+data.bookingNet);
+    $("paymentNet").textContent=money(data.paymentNet);
+    $("balance").textContent=money(data.balance);
+    $("status").innerHTML=`FOR ME: Opening ${money(data.openingBalance)} + PNR entries ${money(data.bookingNet)} + Receipt/Payment effect ${money(data.paymentNet)} = Outstanding ${money(data.balance)}.`;
+    return;
   }
-  $("journalTitle").textContent=(data.full?"FULL STATEMENT":"JOURNAL")+(data.company?" — "+data.company:"");
-  const jt=$("journalTable");jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>JOURNAL NO.</th><th>PNR</th><th>NAME</th><th>TICKET NO.</th><th>ROUTE</th><th class="num">AMOUNT</th></tr>';
-  let jhtml="";for(const r of data.visible)jhtml+=`<tr${r.chd?' class="chd"':''}><td>${esc(r.date)}</td><td>${esc(r.journalNo)}</td><td>${esc(r.pnr)}</td><td>${esc(r.name)}</td><td>${esc(r.ticket)}</td><td>${esc(r.route)}</td><td class="num">${money(r.amount)}</td></tr>`;
-  jt.querySelector("tbody").innerHTML=jhtml||'<tr><td colspan="7" style="text-align:center">No valid Journal-linked entries found.</td></tr>';
+
+  $("journalTitle").textContent="JOURNAL"+(data.company?" — "+data.company:"");
+  const jt=$("journalTable");
+  jt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>JOURNAL NO.</th><th>PNR</th><th>NAME</th><th>TICKET NO.</th><th>ROUTE</th><th class="num">AMOUNT</th></tr>';
+
+  // Build one HTML string and assign once. This avoids hundreds/thousands of DOM mutations.
+  let jhtml="";
+  for(const r of data.visible){
+    jhtml+=`<tr${r.chd?' class="chd"':''}><td>${esc(r.date)}</td><td>${esc(r.journalNo)}</td><td>${esc(r.pnr)}</td><td>${esc(r.name)}</td><td>${esc(r.ticket)}</td><td>${esc(r.route)}</td><td class="num">${money(r.amount)}</td></tr>`;
+  }
+  $("journalTable").querySelector("tbody").innerHTML=jhtml || '<tr><td colspan="7" style="text-align:center">No valid Journal-linked entries found.</td></tr>';
   jt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="6">BOOKING NET</td><td class="num">${money(data.bookingNet)}</td></tr>`;
-  const pt=$("paymentTable");pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>TYPE</th><th class="num">AMOUNT</th></tr>';
-  let phtml="";for(const r of data.payments)phtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}</td><td class="num">${money(r.amount)}</td></tr>`;
-  pt.querySelector("tbody").innerHTML=phtml||'<tr><td colspan="3" style="text-align:center">No receipt/payment entries found.</td></tr>';
+
+  const pt=$("paymentTable");
+  pt.querySelector("thead").innerHTML='<tr><th>DATE</th><th>TYPE</th><th class="num">AMOUNT</th></tr>';
+  let phtml="";
+  for(const r of data.payments){
+    phtml+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}</td><td class="num">${money(r.amount)}</td></tr>`;
+  }
+  pt.querySelector("tbody").innerHTML=phtml || '<tr><td colspan="3" style="text-align:center">No receipt/payment entries found.</td></tr>';
   pt.querySelector("tfoot").innerHTML=`<tr class="total"><td colspan="2">PAYMENT NET</td><td class="num">${money(data.paymentNet)}</td></tr>`;
-  $("bookingNet").textContent=money(data.bookingNet);$("paymentNet").textContent=money(data.paymentNet);$("balance").textContent=money(data.balance);
-  $("status").innerHTML=`${data.full?"FULL STATEMENT":"FOR CLIENT"}: Booking Net ${money(data.bookingNet)} − Payment Net ${money(data.paymentNet)} = Outstanding ${money(data.balance)}.`;
+
+  $("bookingNet").textContent=money(data.bookingNet);
+  $("paymentNet").textContent=money(data.paymentNet);
+  $("balance").textContent=money(data.balance);
+  $("status").innerHTML=`FOR CLIENT: Booking Net ${money(data.bookingNet)} − Payment Net ${money(data.paymentNet)} = Outstanding ${money(data.balance)}.`;
 }
-function crc32(data){let c=0xFFFFFFFF;for(let i=0;i<data.length;i++){c^=data[i];for(let k=0;k<8;k++)c=(c>>>1)^((c&1)?0xEDB88320:0)}return(c^0xFFFFFFFF)>>>0}
-function u16(n){return[n&255,(n>>>8)&255]}function u32(n){return[n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}function concatBytes(arrs){let n=arrs.reduce((s,a)=>s+a.length,0),o=new Uint8Array(n),p=0;arrs.forEach(a=>{o.set(a,p);p+=a.length});return o}
-function zipStore(files){const enc=new TextEncoder(),locals=[],centrals=[];let off=0;for(const f of files){const name=enc.encode(f.name),data=typeof f.data==="string"?enc.encode(f.data):f.data,crc=crc32(data);const lh=new Uint8Array(concatBytes([Uint8Array.of(0x50,0x4b,0x03,0x04),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(data.length)),new Uint8Array(u32(data.length)),new Uint8Array(u16(name.length)),new Uint8Array(u16(0)),name,data]));locals.push(lh);const ch=new Uint8Array(concatBytes([Uint8Array.of(0x50,0x4b,0x01,0x02),new Uint8Array([20,0,20,0,0,0,0,0,0,0,0,0]),new Uint8Array(u32(crc)),new Uint8Array(u32(data.length)),new Uint8Array(u32(data.length)),new Uint8Array(u16(name.length)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(0)),new Uint8Array(u32(off)),name]));centrals.push(ch);off+=lh.length}const cd=concatBytes(centrals),body=concatBytes(locals),end=new Uint8Array(concatBytes([Uint8Array.of(0x50,0x4b,0x05,0x06),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(files.length)),new Uint8Array(u16(files.length)),new Uint8Array(u32(cd.length)),new Uint8Array(u32(body.length)),new Uint8Array(u16(0))]));return concatBytes([body,cd,end])}
-function xmlEsc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}function colName(n){let s="";while(n){let r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26)}return s}
-function sheetXml(rows){let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';rows.forEach((r,ri)=>{x+=`<row r="${ri+1}">`;r.forEach((v,ci)=>{if(v===null||v===undefined||v==="")x+=`<c r="${colName(ci+1)}${ri+1}"/>`;else if(typeof v==="number")x+=`<c r="${colName(ci+1)}${ri+1}" t="n"><v>${v}</v></c>`;else x+=`<c r="${colName(ci+1)}${ri+1}" t="inlineStr"><is><t>${xmlEsc(v)}</t></is></c>`});x+="</row>"});return x+"</sheetData></worksheet>"}
-function exportXlsx(data){const j=[["DATE","JOURNAL NO.","PNR","NAME","TICKET NO.","ROUTE","AMOUNT"]];data.visible.forEach(r=>j.push([r.date,r.journalNo,r.pnr,r.name,r.ticket,r.route,Number(r.amount)]));j.push(["","","","","","BOOKING NET",Number(data.bookingNet)]);const p=[["DATE","TYPE","AMOUNT"]];data.payments.forEach(r=>p.push([r.date,r.type,Number(r.amount)]));p.push(["","PAYMENT NET",Number(data.paymentNet)]);p.push(["","OUTSTANDING",Number(data.balance)]);const files=[{name:"[Content_Types].xml",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`},{name:"_rels/.rels",data:`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},{name:"xl/workbook.xml",data:`<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="JOURNAL" sheetId="1" r:id="rId1"/><sheet name="RECEIPT-PAYMENT" sheetId="2" r:id="rId2"/></sheets></workbook>`},{name:"xl/_rels/workbook.xml.rels",data:`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/></Relationships>`},{name:"xl/worksheets/sheet1.xml",data:sheetXml(j)},{name:"xl/worksheets/sheet2.xml",data:sheetXml(p)}];const bytes=zipStore(files),blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="STATEMENT.xlsx";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
-$("modeFull").onclick=()=>{CURRENT_MODE="full";$("modeFull").classList.add("primary");$("modeClient").classList.remove("primary");$("modeMe").classList.remove("primary");$("modeHelp").textContent="FULL STATEMENT: Ledger Account format; reads the narration line below each ledger entry and separates receipts/payments."};
-let CURRENT_MODE="client";let LAST=null;$('modeClient').onclick=()=>{CURRENT_MODE="client";$('modeFull').classList.remove("primary");$('modeClient').classList.add("primary");$('modeMe').classList.remove("primary");$('modeHelp').textContent="FOR CLIENT: full narration-based client statement."};$('modeMe').onclick=()=>{CURRENT_MODE="me";$('modeFull').classList.remove("primary");$('modeMe').classList.add("primary");$('modeClient').classList.remove("primary");$('modeHelp').textContent="FOR ME: PNR references go in the upper box; numeric references go to Receipt/Payment."};$('process').onclick=()=>{const raw=$('input').value.trim();if(!raw){alert("Paste Tally / Excel data first.");return}$('status').textContent="Processing…";$('result').style.display="block";setTimeout(()=>{try{LAST=CURRENT_MODE==="me"?parseForMe(raw):CURRENT_MODE==="full"?parseFull(raw):parse(raw);render(LAST)}catch(e){console.error(e);alert("Processing failed: "+e.message)}},0)};$('test').onclick=()=>{$('input').value=TEST_DATA;$('input').focus()};$('clear').onclick=()=>{$('input').value="";$('result').style.display="none";LAST=null};$('excel').onclick=()=>{if(!LAST){alert("Process statement first.");return}exportXlsx(LAST)};$('upload').onclick=()=>{$('file').click()};$('file').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(/\.(xlsx|xls)$/i.test(f.name)){if(!window.XLSX){await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";s.onload=res;s.onerror=()=>rej(new Error("Excel reader unavailable."));document.head.appendChild(s)})}const wb=XLSX.read(await f.arrayBuffer(),{type:"array"});$('input').value=wb.SheetNames.map(n=>XLSX.utils.sheet_to_csv(wb.Sheets[n],{FS:"\t"})).join("\n")}else $('input').value=await f.text();alert("File loaded. Click PROCESS STATEMENT.")}catch(err){alert(err.message)}});
-</script>
-</body>
-</html>
+function crc32(data){
+  let c=0xFFFFFFFF;
+  for(let i=0;i<data.length;i++){c^=data[i];for(let k=0;k<8;k++)c=(c>>>1)^((c&1)?0xEDB88320:0)}
+  return (c^0xFFFFFFFF)>>>0;
+}
+function u16(n){return [n&255,(n>>>8)&255]}
+function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}
+function concatBytes(arrs){let n=arrs.reduce((s,a)=>s+a.length,0),o=new Uint8Array(n),p=0;arrs.forEach(a=>{o.set(a,p);p+=a.length});return o}
+function zipStore(files){
+  const enc=new TextEncoder(), locals=[], centrals=[]; let off=0;
+  for(const f of files){
+    const name=enc.encode(f.name), data=typeof f.data==="string"?enc.encode(f.data):f.data, crc=crc32(data);
+    const lh=new Uint8Array(concatBytes([
+      Uint8Array.of(0x50,0x4b,0x03,0x04),new Uint8Array(u16(20)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),
+      new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(crc)),new Uint8Array(u32(data.length)),new Uint8Array(u32(data.length)),new Uint8Array(u16(name.length)),new Uint8Array(u16(0)),name,data
+    ]));
+    locals.push(lh);
+    const ch=new Uint8Array(concatBytes([
+      Uint8Array.of(0x50,0x4b,0x01,0x02),new Uint8Array([20,0,20,0,0,0,0,0,0,0,0,0]),new Uint8Array(u32(crc)),new Uint8Array(u32(data.length)),new Uint8Array(u32(data.length)),new Uint8Array(u16(name.length)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u32(0)),new Uint8Array(u32(off)),name
+    ]));
+    centrals.push(ch);off+=lh.length;
+  }
+  const cd=concatBytes(centrals), body=concatBytes(locals);
+  const end=new Uint8Array(concatBytes([Uint8Array.of(0x50,0x4b,0x05,0x06),new Uint8Array(u16(0)),new Uint8Array(u16(0)),new Uint8Array(u16(files.length)),new Uint8Array(u16(files.length)),new Uint8Array(u32(cd.length)),new Uint8Array(u32(body.length)),new Uint8Array(u16(0))]));
+  return concatBytes([body,cd,end]);
+}
+function xmlEsc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function colName(n){let s="";while(n){let r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26)}return s}
+function sheetXml(rows){
+  let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+  rows.forEach((r,ri)=>{x+=`<row r="${ri+1}">`;r.forEach((v,ci)=>{
+    if(v===null||v===undefined||v==="")x+=`<c r="${colName(ci+1)}${ri+1}"/>`;
+    else if(typeof v==="number")x+=`<c r="${colName(ci+1)}${ri+1}" t="n"><v>${v}</v></c>`;
+    else x+=`<c r="${colName(ci+1)}${ri+1}" t="inlineStr"><is><t>${xmlEsc(v)}</t></is></c>`;
+  });x+="</row>"});return x+"</sheetData></worksheet>"
+}
+function exportXlsx(data){
+  const j=[["DATE","JOURNAL NO.","PNR","NAME","TICKET NO.","ROUTE","AMOUNT"]];
+  data.visible.forEach(r=>j.push([r.date,r.journalNo,r.pnr,r.name,r.ticket,r.route,Number(r.amount)]));
+  j.push(["","","","","","BOOKING NET",Number(data.bookingNet)]);
+  const p=[["DATE","TYPE","AMOUNT"]];data.payments.forEach(r=>p.push([r.date,r.type,Number(r.amount)]));p.push(["","PAYMENT NET",Number(data.paymentNet)]);p.push(["","OUTSTANDING",Number(data.balance)]);
+  const files=[
+    {name:"[Content_Types].xml",data:`<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`},
+    {name:"_rels/.rels",data:`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+    {name:"xl/workbook.xml",data:`<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="JOURNAL" sheetId="1" r:id="rId1"/><sheet name="RECEIPT-PAYMENT" sheetId="2" r:id="rId2"/></sheets></workbook>`},
+    {name:"xl/_rels/workbook.xml.rels",data:`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/></Relationships>`},
+    {name:"xl/worksheets/sheet1.xml",data:sheetXml(j)},
+    {name:"xl/worksheets/sheet2.xml",data:sheetXml(p)}
+  ];
+  const bytes=zipStore(files),blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="STATEMENT.xlsx";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+}
+
+let CURRENT_MODE="client";
+
+$("modeFull").onclick=()=>{
+  CURRENT_MODE="full";
+  $("modeFull").classList.add("primary");
+  $("modeClient").classList.remove("primary");
+  $("modeMe").classList.remove("primary");
+  $("modeHelp").textContent="FULL STATEMENT: paste the Ledger Account format with Date / Particulars / Vch Type / Debit / Credit.";
+};
+let LAST=null;
+let STATEMENT_WORKER=null;
+function getStatementWorker(){
+  if(STATEMENT_WORKER)return STATEMENT_WORKER;
+  const source=`self.onmessage=function(e){
+  try{
+    const {mode,raw}=e.data||{};
+function clean(s){return String(s??"").replace(/<br\\s*\\/?>/gi,"\\n").replace(/&nbsp;/gi," ").replace(/\\u00a0/g," ").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/\\r/g,"").trim()}
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function money(v){v=Number(v)||0;const n=Math.abs(v).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});return "NGN "+(v<0?"("+n+")":n)}
+function num(s){return parseFloat(String(s).replace(/,/g,""))||0}
+function parseDate(s){const m=String(s).match(/^(\\d{1,2})[-\\/]([A-Za-z]{3}|\\d{1,2})[-\\/](\\d{2,4})$/);if(!m)return null;const mo={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};let y=+m[3];if(y<100)y+=2000;return new Date(y,/^[A-Za-z]/.test(m[2])?mo[m[2].toLowerCase()]:+m[2]-1,+m[1])}
+function dateText(d){return d?\`\${String(d.getDate()).padStart(2,"0")}/\${String(d.getMonth()+1).padStart(2,"0")}/\${d.getFullYear()}\`:""}
+function dateKey(d){return d?\`\${d.getFullYear()}-\${d.getMonth()}-\${d.getDate()}\`:""}
+function dateAt(s){const m=String(s).match(/^(\\d{1,2}[-\\/](?:[A-Za-z]{3}|\\d{1,2})[-\\/]\\d{2,4})\\b/);return m?parseDate(m[1]):null}
+function amountAt(s){const m=String(s).match(/(?:NGN\\s*)?([\\d,]+(?:\\.\\d+)?)\\s*(Dr|Cr)\\b/i);return m?{value:num(m[1]),side:m[2].toUpperCase()}:null}
+function isJournal(s){return /^(\\d{1,2}[-\\/](?:[A-Za-z]{3}|\\d{1,2})[-\\/]\\d{2,4})\\s+Journal\\b/i.test(s)}
+function isRP(s){return /^(\\d{1,2}[-\\/](?:[A-Za-z]{3}|\\d{1,2})[-\\/]\\d{2,4})\\s+(Receipt|Payment)\\b/i.test(s)}
+
+function rowsFrom(raw){
+  const src=clean(raw);
+  const rows=[];
+  src.split("\\n").forEach(line=>{
+    let s=line.trim(); if(!s)return;
+    if(s.includes("|")){
+      let cells=s.split("|").map(x=>x.trim());
+      while(cells.length && cells[0]==="")cells.shift();
+      while(cells.length && cells[cells.length-1]==="")cells.pop();
+      // Keep each non-empty cell as an ordered token. Embedded <br> stays newline inside cell.
+      cells.forEach(c=>{if(c)rows.push(c)})
+    }else rows.push(s)
+  });
+  return rows.filter(s=>!/^[-:]+$/.test(s)&&!/^(Bill-wise Details|Pending Bills|Date|Ref\\. No\\.?|Pending|Amount)$/i.test(s));
+}
+
+function splitNarrationUnits(text, knownPnr=""){
+  let s=clean(text).replace(/\\r\\n?/g,"\\n");
+  // HTML/Excel pasted line breaks and blank lines are real narration boundaries.
+  s=s.replace(/\\u000b/g,"\\n");
+  let units=[];
+  s.split(/\\n+/).forEach(part=>{
+    part=part.replace(/\\t+/g," ").replace(/\\s{2,}/g," ").trim();
+    if(!part)return;
+    // When <br> was lost and several passenger records were concatenated on one line,
+    // split only at a repeated known PNR. This avoids splitting names accidentally.
+    if(knownPnr){
+      const re=new RegExp("(?=\\\\b"+knownPnr.replace(/[.*+?^\${}()|[\\]\\\\]/g,"\\\\$&")+"\\\\b\\\\s+)","ig");
+      const bits=part.split(re).map(x=>x.trim()).filter(Boolean);
+      if(bits.length>1){units.push(...bits);return;}
+    }
+    units.push(part);
+  });
+  return units;
+}
+
+function findTicket(text){
+  const patterns=[
+    /\\b\\d{3}-\\d{6,15}(?:\\/\\d{1,4}(?:-\\d{1,4})?)?\\b/,
+    /\\b\\d{3}-\\d{7,15}\\b/,
+    /\\b[A-Z]\\d{7,12}\\b/i
+  ];
+  for(const re of patterns){
+    const m=text.match(re);
+    if(m)return m;
+  }
+  return null;
+}
+
+function findRoute(text, ticketMatch){
+  const tail=ticketMatch ? text.slice(ticketMatch.index+ticketMatch[0].length) : text;
+  const airport=/\\b[A-Z]{3}(?:\\s+[A-Z]{3})+\\b/i;
+  const m=tail.match(airport);
+  return m ? m[0].toUpperCase() : "";
+}
+
+function cleanupName(value){
+  return String(value||"")
+    .replace(/\\bRE[- ]?ISSUE(?:D)?\\b/ig,"")
+    .replace(/\\bREFUND(?:ED)?\\b/ig,"")
+    .replace(/\\bEMD\\b/ig,"")
+    .replace(/\\s*\\/\\s*$/,"")
+    .replace(/\\s*-\\s*\\d+\\s*$/,"")
+    .replace(/\\s{2,}/g," ")
+    .trim();
+}
+
+function extract(line, ref=""){
+  let raw=clean(line).replace(/\\t+/g," ").replace(/\\s+/g," ").trim();
+  if(!raw) return {pnr:"",name:"",ticket:"",route:"",type:"Sale",raw:""};
+
+  let type="Sale";
+  if(/\\bREFUND(?:ED)?\\b/i.test(raw)) type="Refund";
+  else if(/\\bRE[- ]?ISSUE(?:D)?\\b/i.test(raw)) type="Reissue";
+
+  const serviceWords=/^(?:INSURANCE|HOTEL|BOOKING|HILLPARK|VISA|PACKAGE|EXTRA)$/i;
+  let pnr="";
+  const pm=raw.match(/^([A-Z0-9]{5,8})\\b/i);
+  if(pm && !serviceWords.test(pm[1])) pnr=pm[1].toUpperCase();
+  if(!pnr && /^[A-Z0-9]{5,8}\\b/.test(ref||"")) pnr=String(ref).split(/\\s+/)[0].toUpperCase();
+
+  const tm=findTicket(raw);
+  const ticket=tm?tm[0]:"";
+  const route=findRoute(raw,tm);
+
+  const upper=raw.toUpperCase();
+  const markers=[];
+  if(/\\bRE[- ]?ISSUE(?:D)?\\b/i.test(raw)) markers.push("REISSUED");
+  if(/\\bREFUND(?:ED)?\\b/i.test(raw)) markers.push("REFUND");
+  if(/\\bEMD\\b/i.test(raw)) markers.push("EMD");
+
+  let service="";
+  if(/\\bHOTEL\\s+ISSUED\\b/.test(upper)) service="HOTEL ISSUED";
+  else if(/\\bHOTEL\\s+BOOKING\\b/.test(upper)) service="HOTEL BOOKING";
+  else if(/\\bVISA\\s+ISSUED\\b/.test(upper)) service="VISA ISSUED";
+  else if(/\\bINSURANCE\\b/.test(upper)) service="INSURANCE";
+  else if(/\\bEXTRA\\s+BAG(?:GAGE|GEAGE)?\\b/.test(upper)) service="EXTRA BAGGEAGE";
+  else if(/\\bPACKAGE\\s+DONE\\b/.test(upper)) service="PACKAGE DONE";
+
+  let finalRoute=route||service||(markers.length?markers.join(" / "):"");
+
+  let work=raw;
+  if(pnr) work=work.replace(new RegExp("^"+pnr.replace(/[.*+?^\${}()|[\\]\\\\]/g,"\\\\$&")+"\\\\s*","i"),"");
+  if(ticket) work=work.replace(ticket,"");
+
+  let name=work;
+  if(service){
+    name=name.replace(new RegExp("^"+service.replace(/[.*+?^\${}()|[\\]\\\\]/g,"\\\\$&")+"\\\\s*","i"),"");
+  }
+  if(finalRoute && !service && route){
+    const idx=name.toUpperCase().lastIndexOf(route.toUpperCase());
+    if(idx>=0) name=name.slice(0,idx);
+  }
+  // Service names often have a trailing "- HOTEL BOOKING" or "- HOTEL".
+  name=name.replace(/\\s*-\\s*(?:HOTEL\\s+)?BOOKING\\b.*$/i,"");
+  name=cleanupName(name);
+
+  // Never allow the route/marker to leak back into the name.
+  if(finalRoute){
+    name=name.replace(new RegExp("\\\\s*"+finalRoute.replace(/[.*+?^\${}()|[\\]\\\\]/g,"\\\\$&")+"\\\\s*$","i"),"").trim();
+  }
+
+  if(!name) name=cleanupName(ref);
+  return {pnr,name,ticket,route:finalRoute,type,raw};
+}
+
+function dateAtStart(s){return dateAt(s)}
+function amountFrom(s){
+  const m=String(s??"").match(/(?:NGN\\s*)?([\\d,]+(?:\\.\\d+)?)\\s*(Dr|Cr)\\b/i);
+  return m ? {value:parseFloat(m[1].replace(/,/g,"")),side:m[2].toUpperCase()} : null;
+}
+
+function parseForMe(raw){
+  const source=clean(raw).replace(/\\r\\n?/g,"\\n");
+  const rows=[];
+  source.split("\\n").forEach(line=>{
+    let s=line.trim(); if(!s)return;
+    if(s.includes("|")){
+      let cells=s.split("|").map(c=>clean(c).trim());
+      while(cells.length&&cells[0]==="")cells.shift();
+      while(cells.length&&cells[cells.length-1]==="")cells.pop();
+      if(cells.length)rows.push(cells);
+    }else if(s.includes("\\t")){
+      rows.push(s.split("\\t").map(c=>clean(c).trim()));
+    }else rows.push([s]);
+  });
+
+  let company="";
+  const entries=[];
+  for(const r of rows){
+    const t=r.join(" ").replace(/\\s+/g," ").trim();
+    if(!t || /^[-:]+$/.test(t) ||
+       /^(Bill-wise Details|Pending Bills|Date|Ref\\.?\\s*No\\.?|Pending|Amount)$/i.test(t))continue;
+    const d=dateAtStart(t), a=amountFrom(t);
+    if(!d && !a && !/^(Journal|Receipt|Payment)\\b/i.test(t) && !/^\\d{1,2}-[A-Za-z]{3}-\\d{2}\\s+to\\b/i.test(t) && !company){
+      company=t; continue;
