@@ -924,177 +924,52 @@ $("modeFull").onclick=()=>{
   $("modeHelp").textContent="FULL STATEMENT: paste the Ledger Account format with Date / Particulars / Vch Type / Debit / Credit.";
 };
 let LAST=null;
-let STATEMENT_WORKER=null;
-function getStatementWorker(){
-  if(STATEMENT_WORKER)return STATEMENT_WORKER;
-  const source=`self.onmessage=function(e){
-  try{
-    const {mode,raw}=e.data||{};
-function clean(s){return String(s??"").replace(/<br\\s*\\/?>/gi,"\\n").replace(/&nbsp;/gi," ").replace(/\\u00a0/g," ").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/\\r/g,"").trim()}
-function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-function money(v){v=Number(v)||0;const n=Math.abs(v).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});return "NGN "+(v<0?"("+n+")":n)}
-function num(s){return parseFloat(String(s).replace(/,/g,""))||0}
-function parseDate(s){const m=String(s).match(/^(\\d{1,2})[-\\/]([A-Za-z]{3}|\\d{1,2})[-\\/](\\d{2,4})$/);if(!m)return null;const mo={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};let y=+m[3];if(y<100)y+=2000;return new Date(y,/^[A-Za-z]/.test(m[2])?mo[m[2].toLowerCase()]:+m[2]-1,+m[1])}
-function dateText(d){return d?\`\${String(d.getDate()).padStart(2,"0")}/\${String(d.getMonth()+1).padStart(2,"0")}/\${d.getFullYear()}\`:""}
-function dateKey(d){return d?\`\${d.getFullYear()}-\${d.getMonth()}-\${d.getDate()}\`:""}
-function dateAt(s){const m=String(s).match(/^(\\d{1,2}[-\\/](?:[A-Za-z]{3}|\\d{1,2})[-\\/]\\d{2,4})\\b/);return m?parseDate(m[1]):null}
-function amountAt(s){const m=String(s).match(/(?:NGN\\s*)?([\\d,]+(?:\\.\\d+)?)\\s*(Dr|Cr)\\b/i);return m?{value:num(m[1]),side:m[2].toUpperCase()}:null}
-function isJournal(s){return /^(\\d{1,2}[-\\/](?:[A-Za-z]{3}|\\d{1,2})[-\\/]\\d{2,4})\\s+Journal\\b/i.test(s)}
-function isRP(s){return /^(\\d{1,2}[-\\/](?:[A-Za-z]{3}|\\d{1,2})[-\\/]\\d{2,4})\\s+(Receipt|Payment)\\b/i.test(s)}
 
-function rowsFrom(raw){
-  const src=clean(raw);
-  const rows=[];
-  src.split("\\n").forEach(line=>{
-    let s=line.trim(); if(!s)return;
-    if(s.includes("|")){
-      let cells=s.split("|").map(x=>x.trim());
-      while(cells.length && cells[0]==="")cells.shift();
-      while(cells.length && cells[cells.length-1]==="")cells.pop();
-      // Keep each non-empty cell as an ordered token. Embedded <br> stays newline inside cell.
-      cells.forEach(c=>{if(c)rows.push(c)})
-    }else rows.push(s)
-  });
-  return rows.filter(s=>!/^[-:]+$/.test(s)&&!/^(Bill-wise Details|Pending Bills|Date|Ref\\. No\\.?|Pending|Amount)$/i.test(s));
-}
+$("modeClient").onclick=()=>{
+  CURRENT_MODE="client";
+  $("modeClient").classList.add("primary");
+  $("modeFull").classList.remove("primary");
+  $("modeMe").classList.remove("primary");
+  $("modeHelp").textContent="FOR CLIENT: full narration-based client statement.";
+};
+$("modeMe").onclick=()=>{
+  CURRENT_MODE="me";
+  $("modeMe").classList.add("primary");
+  $("modeFull").classList.remove("primary");
+  $("modeClient").classList.remove("primary");
+  $("modeHelp").textContent="FOR ME: PNR references go in the upper box; numeric references go to Receipt/Payment.";
+};
 
-function splitNarrationUnits(text, knownPnr=""){
-  let s=clean(text).replace(/\\r\\n?/g,"\\n");
-  // HTML/Excel pasted line breaks and blank lines are real narration boundaries.
-  s=s.replace(/\\u000b/g,"\\n");
-  let units=[];
-  s.split(/\\n+/).forEach(part=>{
-    part=part.replace(/\\t+/g," ").replace(/\\s{2,}/g," ").trim();
-    if(!part)return;
-    // When <br> was lost and several passenger records were concatenated on one line,
-    // split only at a repeated known PNR. This avoids splitting names accidentally.
-    if(knownPnr){
-      const re=new RegExp("(?=\\\\b"+knownPnr.replace(/[.*+?^\${}()|[\\]\\\\]/g,"\\\\$&")+"\\\\b\\\\s+)","ig");
-      const bits=part.split(re).map(x=>x.trim()).filter(Boolean);
-      if(bits.length>1){units.push(...bits);return;}
-    }
-    units.push(part);
-  });
-  return units;
-}
+// Large Excel/Tally pastes can carry rich clipboard formats. Read only plain text
+// and insert it ourselves to avoid the browser spending time on HTML/formatting data.
+// ULTRA-FAST PASTE:
+// No custom paste handler. Chrome's native textarea paste path is used directly.
+// This avoids JS copying/rebuilding the entire existing textarea value.
 
-function findTicket(text){
-  const patterns=[
-    /\\b\\d{3}-\\d{6,15}(?:\\/\\d{1,4}(?:-\\d{1,4})?)?\\b/,
-    /\\b\\d{3}-\\d{7,15}\\b/,
-    /\\b[A-Z]\\d{7,12}\\b/i
-  ];
-  for(const re of patterns){
-    const m=text.match(re);
-    if(m)return m;
-  }
-  return null;
-}
+$("process").onclick=()=>{
+  const raw=$("input").value.trim();
+  if(!raw){alert("Paste Tally / Excel data first.");return}
+  $("status").textContent="Processing…";
+  $("result").style.display="block";
+  setTimeout(()=>{
+    try{
+      LAST=CURRENT_MODE==="me"?parseForMe(raw):(CURRENT_MODE==="full"?parseFullStatement(raw):parse(raw));
+      render(LAST);
+    }catch(e){console.error(e);alert("Processing failed: "+e.message)}
+  },0);
+};
 
-function findRoute(text, ticketMatch){
-  const tail=ticketMatch ? text.slice(ticketMatch.index+ticketMatch[0].length) : text;
-  const airport=/\\b[A-Z]{3}(?:\\s+[A-Z]{3})+\\b/i;
-  const m=tail.match(airport);
-  return m ? m[0].toUpperCase() : "";
-}
-
-function cleanupName(value){
-  return String(value||"")
-    .replace(/\\bRE[- ]?ISSUE(?:D)?\\b/ig,"")
-    .replace(/\\bREFUND(?:ED)?\\b/ig,"")
-    .replace(/\\bEMD\\b/ig,"")
-    .replace(/\\s*\\/\\s*$/,"")
-    .replace(/\\s*-\\s*\\d+\\s*$/,"")
-    .replace(/\\s{2,}/g," ")
-    .trim();
-}
-
-function extract(line, ref=""){
-  let raw=clean(line).replace(/\\t+/g," ").replace(/\\s+/g," ").trim();
-  if(!raw) return {pnr:"",name:"",ticket:"",route:"",type:"Sale",raw:""};
-
-  let type="Sale";
-  if(/\\bREFUND(?:ED)?\\b/i.test(raw)) type="Refund";
-  else if(/\\bRE[- ]?ISSUE(?:D)?\\b/i.test(raw)) type="Reissue";
-
-  const serviceWords=/^(?:INSURANCE|HOTEL|BOOKING|HILLPARK|VISA|PACKAGE|EXTRA)$/i;
-  let pnr="";
-  const pm=raw.match(/^([A-Z0-9]{5,8})\\b/i);
-  if(pm && !serviceWords.test(pm[1])) pnr=pm[1].toUpperCase();
-  if(!pnr && /^[A-Z0-9]{5,8}\\b/.test(ref||"")) pnr=String(ref).split(/\\s+/)[0].toUpperCase();
-
-  const tm=findTicket(raw);
-  const ticket=tm?tm[0]:"";
-  const route=findRoute(raw,tm);
-
-  const upper=raw.toUpperCase();
-  const markers=[];
-  if(/\\bRE[- ]?ISSUE(?:D)?\\b/i.test(raw)) markers.push("REISSUED");
-  if(/\\bREFUND(?:ED)?\\b/i.test(raw)) markers.push("REFUND");
-  if(/\\bEMD\\b/i.test(raw)) markers.push("EMD");
-
-  let service="";
-  if(/\\bHOTEL\\s+ISSUED\\b/.test(upper)) service="HOTEL ISSUED";
-  else if(/\\bHOTEL\\s+BOOKING\\b/.test(upper)) service="HOTEL BOOKING";
-  else if(/\\bVISA\\s+ISSUED\\b/.test(upper)) service="VISA ISSUED";
-  else if(/\\bINSURANCE\\b/.test(upper)) service="INSURANCE";
-  else if(/\\bEXTRA\\s+BAG(?:GAGE|GEAGE)?\\b/.test(upper)) service="EXTRA BAGGEAGE";
-  else if(/\\bPACKAGE\\s+DONE\\b/.test(upper)) service="PACKAGE DONE";
-
-  let finalRoute=route||service||(markers.length?markers.join(" / "):"");
-
-  let work=raw;
-  if(pnr) work=work.replace(new RegExp("^"+pnr.replace(/[.*+?^\${}()|[\\]\\\\]/g,"\\\\$&")+"\\\\s*","i"),"");
-  if(ticket) work=work.replace(ticket,"");
-
-  let name=work;
-  if(service){
-    name=name.replace(new RegExp("^"+service.replace(/[.*+?^\${}()|[\\]\\\\]/g,"\\\\$&")+"\\\\s*","i"),"");
-  }
-  if(finalRoute && !service && route){
-    const idx=name.toUpperCase().lastIndexOf(route.toUpperCase());
-    if(idx>=0) name=name.slice(0,idx);
-  }
-  // Service names often have a trailing "- HOTEL BOOKING" or "- HOTEL".
-  name=name.replace(/\\s*-\\s*(?:HOTEL\\s+)?BOOKING\\b.*$/i,"");
-  name=cleanupName(name);
-
-  // Never allow the route/marker to leak back into the name.
-  if(finalRoute){
-    name=name.replace(new RegExp("\\\\s*"+finalRoute.replace(/[.*+?^\${}()|[\\]\\\\]/g,"\\\\$&")+"\\\\s*$","i"),"").trim();
-  }
-
-  if(!name) name=cleanupName(ref);
-  return {pnr,name,ticket,route:finalRoute,type,raw};
-}
-
-function dateAtStart(s){return dateAt(s)}
-function amountFrom(s){
-  const m=String(s??"").match(/(?:NGN\\s*)?([\\d,]+(?:\\.\\d+)?)\\s*(Dr|Cr)\\b/i);
-  return m ? {value:parseFloat(m[1].replace(/,/g,"")),side:m[2].toUpperCase()} : null;
-}
-
-function parseForMe(raw){
-  const source=clean(raw).replace(/\\r\\n?/g,"\\n");
-  const rows=[];
-  source.split("\\n").forEach(line=>{
-    let s=line.trim(); if(!s)return;
-    if(s.includes("|")){
-      let cells=s.split("|").map(c=>clean(c).trim());
-      while(cells.length&&cells[0]==="")cells.shift();
-      while(cells.length&&cells[cells.length-1]==="")cells.pop();
-      if(cells.length)rows.push(cells);
-    }else if(s.includes("\\t")){
-      rows.push(s.split("\\t").map(c=>clean(c).trim()));
-    }else rows.push([s]);
-  });
-
-  let company="";
-  const entries=[];
-  for(const r of rows){
-    const t=r.join(" ").replace(/\\s+/g," ").trim();
-    if(!t || /^[-:]+$/.test(t) ||
-       /^(Bill-wise Details|Pending Bills|Date|Ref\\.?\\s*No\\.?|Pending|Amount)$/i.test(t))continue;
-    const d=dateAtStart(t), a=amountFrom(t);
-    if(!d && !a && !/^(Journal|Receipt|Payment)\\b/i.test(t) && !/^\\d{1,2}-[A-Za-z]{3}-\\d{2}\\s+to\\b/i.test(t) && !company){
-      company=t; continue;
+$("test").onclick=()=>{$("input").value=TEST_DATA;$("input").focus()};
+$("clear").onclick=()=>{$("input").value="";$("result").style.display="none";LAST=null};
+$("excel").onclick=()=>{if(!LAST){alert("Process statement first.");return}exportXlsx(LAST)};
+$("upload").onclick=()=>{$("file").click()};
+$("file").addEventListener("change",async e=>{const f=e.target.files?.[0];if(!f)return;try{
+  if(/\.(xlsx|xls)$/i.test(f.name)){
+    if(!window.XLSX){await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";s.onload=res;s.onerror=()=>rej(new Error("Excel reader unavailable."));document.head.appendChild(s)})}
+    const wb=XLSX.read(await f.arrayBuffer(),{type:"array"});$("input").value=wb.SheetNames.map(n=>XLSX.utils.sheet_to_csv(wb.Sheets[n],{FS:"\t"})).join("\n");
+  }else $("input").value=await f.text();
+  alert("File loaded. Click PROCESS STATEMENT.");
+}catch(err){alert(err.message)}});
+</script>
+</body>
+</html>
