@@ -118,6 +118,7 @@ h1, .title, .header-title, header h1 {
       <button id="modeClient" class="primary">FOR CLIENT</button>
       <button id="modeMe">FOR ME</button>
       <button id="modeFull">FULL STATEMENT</button>
+      <button id="modeCFS">CFS</button>
     </div>
     <div id="modeHelp" class="hint" style="margin-bottom:10px">FOR CLIENT: full narration-based client statement.</div>
     <div class="actions">
@@ -774,6 +775,66 @@ function parse(raw){
     balance:openingBalance+bookingNet-paymentNet
   };
 }
+
+function parseCFS(raw){
+  const lines=clean(raw).replace(/\r\n?/g,"\n").split("\n");
+  const dateRe=/^(\d{1,2}[-\/](?:[A-Za-z]{3,5}|\d{1,2})[-\/]\d{2,4})\b/;
+  const dateVal=s=>{
+    const m=String(s).match(dateRe); if(!m)return null;
+    const p=m[1].match(/^(\d{1,2})[-\/](\w+|\d{1,2})[-\/](\d{2,4})$/);
+    if(!p)return null;
+    const months={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,sept:8,oct:9,nov:10,dec:11};
+    let y=+p[3];if(y<100)y+=2000;
+    const mo=/^\d+$/.test(p[2])?+p[2]-1:months[p[2].toLowerCase()];
+    if(mo===undefined)return null;
+    return {date:dateText(new Date(y,mo,+p[1])),raw:m[1]};
+  };
+  const tx=[], payments=[];
+  let company="";
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i].trim();
+    const d=dateVal(line);
+    if(!d){
+      if(!company && line && !/^(Bill-wise Details|Pending Bills|Date|Ref\. No\.?|Pending|Amount|1-Jan-26 to)/i.test(line)) company=line;
+      continue;
+    }
+    const cells=line.split("\t").map(x=>x.trim()).filter(Boolean);
+    const typeIndex=cells.findIndex(x=>/^(Journal|Receipt|Payment)$/i.test(x));
+    if(typeIndex<0)continue;
+    const type=cells[typeIndex];
+    let voucherNo="", amountInfo=null;
+    for(let j=typeIndex+1;j<cells.length;j++){
+      if(!amountInfo){
+        const am=cells[j].match(/^([\d,]+(?:\.\d+)?)\s*(Dr|Cr)$/i);
+        if(am)amountInfo={amount:Number(am[1].replace(/,/g,"")),side:am[2].toUpperCase()};
+        else if(/^\d+$/.test(cells[j]) && !voucherNo) voucherNo=cells[j];
+      }
+    }
+    if(!amountInfo)continue;
+    let narration=[], end=i+1;
+    for(let j=i+1;j<lines.length;j++){
+      const next=lines[j].trim();
+      if(dateRe.test(next)){break;}
+      end=j;
+      if(next) narration.push(next.replace(/^["']|["']$/g,"").trim());
+    }
+    const narr=narration.join("\n").replace(/["']/g,"").trim();
+    if(/^Receipt$/i.test(type)||/^Payment$/i.test(type)){
+      const sign=type.toLowerCase()==="receipt" ? 1 : -1;
+      payments.push({date:d.date,type:type+(voucherNo?" "+voucherNo:""),amount:sign*amountInfo.amount});
+      i=end; continue;
+    }
+    const first=(narr.split(/\n+/).map(x=>x.trim()).find(Boolean)||"");
+    const info=extract(first, "");
+    let signed=amountInfo.side==="CR"?-Math.abs(amountInfo.amount):Math.abs(amountInfo.amount);
+    tx.push({date:d.date,journalNo:voucherNo,pnr:info.pnr||"-",name:info.name||first||"-",ticket:info.ticket||"-",route:info.route||"-",amount:signed,type:info.type,chd:/\b(?:CHD|INF)\b/i.test(info.name)});
+    i=end;
+  }
+  const bookingNet=tx.reduce((s,r)=>s+r.amount,0);
+  const paymentNet=payments.reduce((s,r)=>s+r.amount,0);
+  return {mode:"full",company,journals:tx,visible:tx,payments,bookingNet,paymentNet,openingBalance:0,balance:bookingNet-paymentNet};
+}
+
 function render(data){
   $("result").style.display="block";
 
@@ -921,14 +982,24 @@ $("modeFull").onclick=()=>{
   $("modeFull").classList.add("primary");
   $("modeClient").classList.remove("primary");
   $("modeMe").classList.remove("primary");
+  $("modeCFS").classList.remove("primary");
   $("modeHelp").textContent="FULL STATEMENT: paste the Ledger Account format with Date / Particulars / Vch Type / Debit / Credit.";
 };
 let LAST=null;
+$("modeCFS").onclick=()=>{
+  CURRENT_MODE="cfs";
+  $("modeCFS").classList.add("primary");
+  $("modeFull").classList.remove("primary");
+  $("modeClient").classList.remove("primary");
+  $("modeMe").classList.remove("primary");
+  $("modeHelp").textContent="CFS: paste Bill-wise Details data. Uses FULL STATEMENT one-Journal-one-row rule.";
+};
 
 $("modeClient").onclick=()=>{
   CURRENT_MODE="client";
   $("modeClient").classList.add("primary");
   $("modeFull").classList.remove("primary");
+  $("modeCFS").classList.remove("primary");
   $("modeMe").classList.remove("primary");
   $("modeHelp").textContent="FOR CLIENT: full narration-based client statement.";
 };
@@ -936,6 +1007,7 @@ $("modeMe").onclick=()=>{
   CURRENT_MODE="me";
   $("modeMe").classList.add("primary");
   $("modeFull").classList.remove("primary");
+  $("modeCFS").classList.remove("primary");
   $("modeClient").classList.remove("primary");
   $("modeHelp").textContent="FOR ME: PNR references go in the upper box; numeric references go to Receipt/Payment.";
 };
@@ -953,7 +1025,7 @@ $("process").onclick=()=>{
   $("result").style.display="block";
   setTimeout(()=>{
     try{
-      LAST=CURRENT_MODE==="me"?parseForMe(raw):(CURRENT_MODE==="full"?parseFullStatement(raw):parse(raw));
+      LAST=CURRENT_MODE==="me"?parseForMe(raw):(CURRENT_MODE==="cfs"?parseCFS(raw):(CURRENT_MODE==="full"?parseFullStatement(raw):parse(raw)));
       render(LAST);
     }catch(e){console.error(e);alert("Processing failed: "+e.message)}
   },0);
